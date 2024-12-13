@@ -14,6 +14,7 @@ import (
 	"github.com/miu200521358/walk/pkg/walk"
 
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
+	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/app"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -60,25 +61,11 @@ func main() {
 			} else {
 				widget.RaiseError(err)
 			}
-			println(model)
 		} else if err != nil {
 			widget.RaiseError(err)
 		} else {
 			widget.RaiseError(errors.New("unknown error"))
 		}
-		// } else {
-		// 	go func() {
-		// 		// 操作ウィンドウは別スレッドで起動
-		// 		controlWindow := controller.NewControlWindow(appConfig, mApp.ControlToViewerChannel(), ui.GetMenuItems, 1)
-		// 		mApp.SetControlWindow(controlWindow)
-
-		// 		controlWindow.InitTabWidget()
-
-		// 		consoleView := widget.NewConsoleView(controlWindow.MainWindow, 256, 50)
-		// 		log.SetOutput(consoleView)
-
-		// 		mApp.RunController()
-		// 	}()
 	}
 
 	viewerWindow := viewer.NewViewWindow(
@@ -88,15 +75,15 @@ func main() {
 
 	mApp.AddViewWindow(viewerWindow)
 
-	// mApp.SetFuncGetModels(func() [][]*pmx.PmxModel {
-	// 	return [][]*pmx.PmxModel{{model}}
-	// })
+	mApp.SetFuncGetModels(func() [][]*pmx.PmxModel {
+		return [][]*pmx.PmxModel{{model}}
+	})
 
-	// motion := vmd.NewVmdMotion("")
+	motion := vmd.NewVmdMotion("")
 
-	// mApp.SetFuncGetMotions(func() [][]*vmd.VmdMotion {
-	// 	return [][]*vmd.VmdMotion{{motion}}
-	// })
+	mApp.SetFuncGetMotions(func() [][]*vmd.VmdMotion {
+		return [][]*vmd.VmdMotion{{motion}}
+	})
 
 	mApp.Center()
 	mApp.RunViewer()
