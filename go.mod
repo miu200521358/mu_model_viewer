@@ -2,15 +2,12 @@ module github.com/miu200521358/mu_model_viewer
 
 go 1.22.4
 
-require (
-	github.com/miu200521358/mlib_go v0.0.1
-	github.com/miu200521358/walk v0.0.4
-)
+require github.com/miu200521358/walk v0.0.4
 
 require (
 	github.com/ftrvxmtrx/tga v0.0.0-20150524081124-bd8e8d5be13a // indirect
 	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 // indirect
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240118000515-a250818d05e3 // indirect
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240118000515-a250818d05e3
 	github.com/go-gl/mathgl v1.1.0 // indirect
 	github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac // indirect
 	github.com/gonum/floats v0.0.0-20181209220543-c233463c7e82 // indirect
@@ -18,6 +15,7 @@ require (
 	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
 	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
 	github.com/miu200521358/dds v0.0.0 // indirect
+	github.com/miu200521358/mlib_go v0.0.1
 	github.com/miu200521358/win v0.0.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.4.0 // indirect
 	github.com/petar/GoLLRB v0.0.0-20210522233825-ae3b015fd3e9 // indirect
