@@ -1,0 +1,89 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "go build and start dlv",
+			"type": "shell",
+			"command": "go build -gcflags=\"all=-N -l\" -ldflags=\"-H windowsgui\" -o main.exe ./cmd && dlv exec ./main.exe --headless --listen=:2345 --api-version=2 --accept-multiclient",
+			// "problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"dependsOn": [
+				"go: mod tidy"
+			],
+			"problemMatcher": {
+				"owner": "custom",
+				"fileLocation": [
+					"relative",
+					"${workspaceFolder}"
+				],
+				"pattern": [
+					{
+						"regexp": ".",
+						"file": 1,
+						"location": 2,
+						"message": 3
+					}
+				],
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "API server listening at", // Delve の起動開始メッセージ
+					"endsPattern": "Listening for remote connections" // Delve のリッスン警告メッセージ
+				}
+			}
+		},
+		{
+			"label": "shell: delete pre debug exe",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"set \"workspaceFolder=${workspaceFolder}\" && ${workspaceFolder}/.vscode/scripts/delete_pre_debug_exe.bat"
+			],
+			"group": {
+				"kind": "none",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": false,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			}
+		},
+		{
+			"label": "go: mod tidy",
+			"type": "shell",
+			"command": "go",
+			"args": [
+				"mod",
+				"tidy"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": false,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"dependsOn": [
+				"shell: delete pre debug exe"
+			],
+			"problemMatcher": []
+		}
+	]
+}
