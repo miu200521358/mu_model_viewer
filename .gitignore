@@ -1,6 +1,9 @@
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
+
+### Golang ------------------------------------
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -19,7 +22,14 @@
 
 # Go workspace file
 go.work
-go.work.sum
 
-# env file
-.env
+build/
+distribution/
+
+cmd/user_config.json
+*.vmd
+*.pmx
+*.pprof
+*.log
+
+配布/

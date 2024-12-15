@@ -54,7 +54,7 @@ func main() {
 	var model *pmx.PmxModel
 	if len(os.Args) > 1 {
 		modelPath := os.Args[1]
-		rep := repository.NewPmxRepository()
+		rep := repository.NewPmxXRepository()
 		if isOk, err := rep.CanLoad(modelPath); isOk && err == nil {
 			if data, err := rep.Load(modelPath); err == nil {
 				model = data.(*pmx.PmxModel)
