@@ -28,7 +28,7 @@ require (
 	gopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect
 )
 
-replace github.com/miu200521358/mlib_go => ../mlib_go
+replace github.com/miu200521358/mlib_go => ../mlib_go_t3
 
 replace github.com/miu200521358/walk => ../walk
 
