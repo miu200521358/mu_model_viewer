@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
 ----------------------------------------------------------------
 
-Å@ÅuPmxTranslatorÅv
+  „ÄåPmxTranslator„Äç
 
-Å@Å@ver1.00.00
+    ver1.00.00
 
-Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@miu200521358
+                                  miu200521358
 
 ----------------------------------------------------------------
 ----------------------------------------------------------------
@@ -18,7 +18,7 @@ Please take a moment to review the following before using it.
 
 
 ----------------------------------------------------------------
-Å°Å@Summary
+‚ñ†  Summary
 ----------------------------------------------------------------
 
 This is a model viewer compatible with PMX models and X files.
@@ -26,29 +26,32 @@ It can be associated with file extensions and launched by double-clicking.
 
 
 ----------------------------------------------------------------
-Å°Å@Distribution Video
+‚ñ†  Distribution Video
 ----------------------------------------------------------------
 
-ÅiworkingÅj
-
-
-----------------------------------------------------------------
-Å°Å@Static Images for Content Tree
-----------------------------------------------------------------
-
-ÅiworkingÅj
+ÔºàworkingÔºâ
 
 
 ----------------------------------------------------------------
-Å°Å@Included Files
+‚ñ†  Static Images for Content Tree
 ----------------------------------------------------------------
 
-- MuModelViewer_x.xx.xx.exeÅ@ÅcÅ@exe file
-- Readme.txtÅ@Å@Å@Å@Å@Å@ ÅcÅ@Readme
+MuModelViewer - „Ç≥„É≥„ÉÜ„É≥„ÉÑ„ÉÑ„É™„ÉºÁî®ÈùôÁîª
+https://seiga.nicovideo.jp/seiga/im11561838
 
 
 ----------------------------------------------------------------
-Å°Å@System Requirements
+‚ñ†  Included Files
+----------------------------------------------------------------
+
+- MuModelViewer_x.xx.xx.exe  ‚Ä¶  exe file
+- Readme.txt                 ‚Ä¶  Readme
+- content_tree.txt              ‚Ä¶  Content tree set.
+- Community Link - miu's Lab    ‚Ä¶ Invitation link to miu's Lab Discord server.
+
+
+----------------------------------------------------------------
+‚ñ†  System Requirements
 ----------------------------------------------------------------
 
 - Windows10/11 64bit
@@ -57,7 +60,7 @@ It can be associated with file extensions and launched by double-clicking.
 - Other runtimes, etc., are not required.
 
 ----------------------------------------------------------------
-Å°Å@How to use
+‚ñ†  How to use
 ----------------------------------------------------------------
 
 Please associate the exe with the PMX or X file extensions.
@@ -66,59 +69,59 @@ If you double-click this exe itself to launch it, only a blank window will appea
 
 
 ----------------------------------------------------------------
-Å°Å@Community Information
+‚ñ†  Community Information
 ----------------------------------------------------------------
 
-MMDí∑âÆÅFhttps://discord.gg/jDqU6qRaKj
+MMDÈï∑Â±ãÔºöhttps://discord.gg/jDqU6qRaKj
 
-Å@This is a unique Discord server where each category has an owner, and you can join the category of your choice.
-Å@It is intended for use in distributing community-limited content and interacting, such as through the Nico Nico Community.
-Å@You can also apply to open new categories.
+  This is a unique Discord server where each category has an owner, and you can join the category of your choice.
+  It is intended for use in distributing community-limited content and interacting, such as through the Nico Nico Community.
+  You can also apply to open new categories.
 
-miuÇÃé¿å±é∫ÅFhttps://discord.gg/MW2Bn47aCN
+miu„ÅÆÂÆüÈ®ìÂÆ§Ôºöhttps://discord.gg/MW2Bn47aCN
 
-Å@This lab focuses on various experiments with self-made tools, such as VMD sizing and Motion Supporter.
-Å@I welcome questions and consultations regarding my tools. An FAQ page is also available.
-Å@Additionally, you can try out beta versions of tools in advance.
-Å@It is one category in the "MMD Nagaya" server, so please join the server and then apply to join this category.
+  This lab focuses on various experiments with self-made tools, such as VMD sizing and Motion Supporter.
+  I welcome questions and consultations regarding my tools. An FAQ page is also available.
+  Additionally, you can try out beta versions of tools in advance.
+  It is one category in the "MMD Nagaya" server, so please join the server and then apply to join this category.
 
 
 ----------------------------------------------------------------
-Å°Å@Terms of Use and Other Information
+‚ñ†  Terms of Use and Other Information
 ----------------------------------------------------------------
 
-ÅsOptional ItemsÅt
+„ÄäOptional Items„Äã
 
 Regarding this tool, within the scope of the original model's terms, you are free to perform the following actions:
 
 - Viewing and checking models
 
-ÅsProhibited ItemsÅt
+„ÄäProhibited Items„Äã
 
 Regarding this tool and the generated models, please refrain from the following actions:
 
 - Actions outside the scope of the original model's terms, etc.
 - Misrepresenting authorship, redistribution, or reprinting
 
-ÅsDisclaimerÅt
+„ÄäDisclaimer„Äã
 
 - Please use the tool at your own risk.
 - The author assumes no responsibility for any issues arising from the use of this tool.
 
 
 ----------------------------------------------------------------
-Å°Å@Source Code & Libraries
+‚ñ†  Source Code & Libraries
 ----------------------------------------------------------------
 
 This tool is created using Go, and includes the following libraries:
 
-ÅEhttps://github.com/lxn/walk
-ÅEhttps://github.com/go-gl/gl
-ÅEhttps://github.com/go-gl/glfw/v3.3/glfw
-ÅEhttps://github.com/go-gl/mathgl
-ÅEhttps://github.com/nicksnyder/go-i18n/v2
-ÅEhttps://github.com/petar/GoLLRB
-ÅEhttps://github.com/ftrvxmtrx/tga
+„Éªhttps://github.com/lxn/walk
+„Éªhttps://github.com/go-gl/gl
+„Éªhttps://github.com/go-gl/glfw/v3.3/glfw
+„Éªhttps://github.com/go-gl/mathgl
+„Éªhttps://github.com/nicksnyder/go-i18n/v2
+„Éªhttps://github.com/petar/GoLLRB
+„Éªhttps://github.com/ftrvxmtrx/tga
 
 The source code is available on GitHub (MIT License).
 However, the copyright is not waived.
@@ -126,15 +129,26 @@ However, the copyright is not waived.
 https://github.com/miu200521358/mu_model_viewer
 
 The icon is borrowed from Human Pictogram 2.0.
+https://pictogram2.com/
 
 
 ----------------------------------------------------------------
-Å°Å@Credit
+‚ñ†  Credit
 ----------------------------------------------------------------
 
-Å@Tool NameÅF MuModelViewer
-Å@AuthorÅFÅ@miu (miu200521358)
+  Tool NameÔºö MuModelViewer
+  AuthorÔºö  miu (miu200521358)
 
-Å@http://www.nicovideo.jp/user/2776342
-Å@Twitter: @miu200521358
-Å@Mail: garnet200521358@gmail.com
+  http://www.nicovideo.jp/user/2776342
+  Twitter: @miu200521358
+  Mail: garnet200521358@gmail.com
+
+
+----------------------------------------------------------------
+‚ñ†  Revision
+----------------------------------------------------------------
+
+MuModelViewer_1.0.0 (2025/02/11)
+- General distribution start.
+
+
