@@ -1,0 +1,39 @@
+PmxモデルおよびXファイルに対応したモデルビューアです
+拡張子に紐付けて、ダブルクリックで起動することができます
+
+--------------------
+■配布動画
+
+【MMD】モデルとモーションのビューワーを作ってみた【MuModelViewer / MuMotionViewer ver1.00】
+
+ニコニコ動画:
+https://www.nicovideo.jp/watch/sm44651615
+
+YouTube:
+https://youtu.be/KIV06g32vmo
+
+--------------------
+■コンテンツツリー
+
+https://seiga.nicovideo.jp/seiga/im11561838
+
+--------------------
+■ バージョン履歴
+
+- 1.0.0 (2025/02/15)
+
+--------------------
+■ ヘルプが必要な場合
+
+ツールの不具合報告やご相談はDiscordからお願いします
+それ以外からのご連絡は、お答えしかねます
+
+miuの実験室：https://discord.gg/MW2Bn47aCN
+
+--------------------
+■ If you need help
+
+Please report tool issues or consultations through Discord.
+We are unable to respond to inquiries from other sources.
+
+miu's Laboratory: https://discord.gg/MW2Bn47aCN

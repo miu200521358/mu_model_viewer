@@ -29,7 +29,13 @@ It can be associated with file extensions and launched by double-clicking.
 ■  Distribution Video
 ----------------------------------------------------------------
 
-（working）
+【MMD】モデルとモーションのビューワーを作ってみた【MuModelViewer / MuMotionViewer ver1.00】
+
+NicoNico Douga:
+https://www.nicovideo.jp/watch/sm44651615
+
+YouTube:
+https://youtu.be/KIV06g32vmo
 
 
 ----------------------------------------------------------------
@@ -92,21 +98,21 @@ miuの実験室：https://discord.gg/MW2Bn47aCN
 
 《Optional Items》
 
-Regarding this tool, within the scope of the original model's terms, you are free to perform the following actions:
+  Regarding this tool, within the scope of the original model's terms, you are free to perform the following actions:
 
-- Viewing and checking models
+    - Viewing and checking models
 
 《Prohibited Items》
 
-Regarding this tool and the generated models, please refrain from the following actions:
+  Regarding this tool and the generated models, please refrain from the following actions:
 
-- Actions outside the scope of the original model's terms, etc.
-- Misrepresenting authorship, redistribution, or reprinting
+    - Actions outside the scope of the original model's terms, etc.
+    - Misrepresenting authorship, redistribution, or reprinting
 
 《Disclaimer》
 
-- Please use the tool at your own risk.
-- The author assumes no responsibility for any issues arising from the use of this tool.
+    - Please use the tool at your own risk.
+    - The author assumes no responsibility for any issues arising from the use of this tool.
 
 
 ----------------------------------------------------------------
