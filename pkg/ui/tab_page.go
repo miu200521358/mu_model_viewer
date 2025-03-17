@@ -18,23 +18,33 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 
 	player := widget.NewMotionPlayer()
 
-	pmxLoad11Picker := widget.NewPmxXLoadFilePicker(
+	materialListbox := widget.NewMaterialListbox(
+		mi18n.T("材質リスト説明"), func(cw *controller.ControlWindow, indexes []int) {
+			cw.StoreSelectedMaterialIndexes(0, 0, indexes)
+		},
+	)
+
+	pmxLoadPicker := widget.NewPmxXLoadFilePicker(
 		"pmx",
-		"モデルファイル1-1",
-		"モデルファイルを選択してください",
+		mi18n.T("モデルファイル"),
+		mi18n.T("モデルファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
 			if data, err := rep.Load(path); err == nil {
-				cw.StoreModel(0, 0, data.(*pmx.PmxModel))
+				model := data.(*pmx.PmxModel)
+				cw.StoreModel(0, 0, model)
+
+				// モデルの読み込みが成功したら材質リスト更新
+				materialListbox.SetMaterials(model.Materials)
 			} else {
 				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 			}
 		},
 	)
 
-	vmdLoader11Picker := widget.NewVmdVpdLoadFilePicker(
+	vmdLoadPicker := widget.NewVmdVpdLoadFilePicker(
 		"vmd",
-		"モーションファイル1-1",
-		"モーションファイルを選択してください",
+		mi18n.T("モーションファイル"),
+		mi18n.T("モーションファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
 			if data, err := rep.Load(path); err == nil {
 				motion := data.(*vmd.VmdMotion)
@@ -46,11 +56,11 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 		},
 	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoad11Picker, vmdLoader11Picker)
+	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialListbox)
 	mWidgets.SetOnLoaded(func() {
 		// 読み込みが完了したら、モデルのパスを設定
 		if path, err := usecase.LoadModelPath(); err == nil {
-			pmxLoad11Picker.SetPath(path)
+			pmxLoadPicker.SetPath(path)
 		}
 	})
 
@@ -70,9 +80,17 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 							Text: mi18n.T("ツール説明"),
 						},
 						declarative.VSeparator{},
-						pmxLoad11Picker.Widgets(),
-						vmdLoader11Picker.Widgets(),
+						pmxLoadPicker.Widgets(),
+						vmdLoadPicker.Widgets(),
 						declarative.VSeparator{},
+						declarative.TextLabel{
+							Text: mi18n.T("材質リスト"),
+						},
+						declarative.TextLabel{
+							Text: mi18n.T("材質リスト説明"),
+						},
+						materialListbox.Widgets(),
+						declarative.VSpacer{},
 						player.Widgets(),
 						declarative.VSpacer{},
 					},
