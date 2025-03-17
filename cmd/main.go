@@ -5,22 +5,19 @@ package main
 
 import (
 	"embed"
-	"errors"
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/miu200521358/mu_model_viewer/pkg/ui"
 	"github.com/miu200521358/walk/pkg/walk"
 
-	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
-	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
-	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
+	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
+	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
+	"github.com/miu200521358/mlib_go/pkg/domain/state"
 	"github.com/miu200521358/mlib_go/pkg/interface/app"
-	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
+	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/viewer"
-	"github.com/miu200521358/mlib_go/pkg/mutils/mconfig"
-	"github.com/miu200521358/mlib_go/pkg/mutils/mi18n"
 )
 
 var env string
@@ -28,11 +25,11 @@ var env string
 func init() {
 	runtime.LockOSThread()
 
-	// システム上の25%の論理プロセッサを使用する
+	// システム上の半分の論理プロセッサを使用させる
 	runtime.GOMAXPROCS(max(1, int(runtime.NumCPU()/4)))
 
 	walk.AppendToWalkInit(func() {
-		walk.MustRegisterWindowClass(widget.ConsoleViewClass)
+		walk.MustRegisterWindowClass(controller.ConsoleViewClass)
 	})
 }
 
@@ -43,48 +40,61 @@ var appFiles embed.FS
 var appI18nFiles embed.FS
 
 func main() {
+	// defer profile.Start(profile.MemProfileHeap, profile.ProfilePath(time.Now().Format("20060102_150405"))).Stop()
+	// defer profile.Start(profile.MemProfile, profile.ProfilePath(time.Now().Format("20060102_150405"))).Stop()
+	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(fmt.Sprintf("cpu_%s", time.Now().Format("20060102_150405")))).Stop()
+	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(fmt.Sprintf("cpu_%s", time.Now().Format("20060102_150405")))).Stop()
+
+	viewerCount := 1
+
 	appConfig := mconfig.LoadAppConfig(appFiles)
 	appConfig.Env = env
 	mi18n.Initialize(appI18nFiles)
+	shared := state.NewSharedState(viewerCount)
 
-	mApp := app.NewMApp(appConfig)
-	mApp.RunViewerToControlChannel()
-	mApp.RunControlToViewerChannel()
+	widths, heights, positionXs, positionYs := app.GetCenterSizeAndWidth(appConfig, viewerCount)
 
-	var model *pmx.PmxModel
-	if len(os.Args) > 1 {
-		modelPath := os.Args[1]
-		rep := repository.NewPmxXRepository()
-		if isOk, err := rep.CanLoad(modelPath); isOk && err == nil {
-			if data, err := rep.Load(modelPath); err == nil {
-				model = data.(*pmx.PmxModel)
-			} else {
-				widget.RaiseError(err)
+	var controlWindow *controller.ControlWindow
+	viewerWindowList := viewer.NewViewerList(shared, appConfig)
+	var err error
+
+	go func() {
+		// 操作ウィンドウは別スレッドで起動
+		defer app.SafeExecute(appConfig.IsSetEnv(), func() {
+			widgets := &controller.MWidgets{}
+
+			controlWindow, err = controller.NewControlWindow(shared, appConfig,
+				ui.NewMenuItems(), ui.NewTabPages(widgets), widgets.EnabledInPlaying,
+				widths[0], heights[0], positionXs[0], positionYs[0])
+			if err != nil {
+				app.ShowErrorDialog(appConfig.IsSetEnv(), err)
+				return
 			}
-		} else if err != nil {
-			widget.RaiseError(err)
-		} else {
-			widget.RaiseError(errors.New("unknown error"))
-		}
+
+			widgets.SetWindow(controlWindow)
+			widgets.OnLoaded()
+
+			controlWindow.Run()
+		})
+	}()
+
+	// GL初期化
+	if err := glfw.Init(); err != nil {
+		app.ShowErrorDialog(appConfig.IsSetEnv(), fmt.Errorf("failed to initialize GLFW: %v", err))
+		return
 	}
 
-	viewerWindow := viewer.NewViewWindow(
-		mApp.ViewerCount(), appConfig, mApp, mApp.ViewerToControlChannel(),
-		fmt.Sprintf("%s %s", appConfig.Name, appConfig.Version), nil)
-	viewerWindow.GetWindow().SetCloseCallback(func(w *glfw.Window) { mApp.AppState().SetClosed(true) })
+	// 描画ウィンドウはメインスレッドで起動
+	defer app.SafeExecute(appConfig.IsSetEnv(), func() {
+		for n := range viewerCount {
+			nIdx := n + 1
+			if err := viewerWindowList.Add("Viewer",
+				widths[nIdx], heights[nIdx], positionXs[nIdx], positionYs[nIdx]); err != nil {
+				app.ShowErrorDialog(appConfig.IsSetEnv(), err)
+				return
+			}
+		}
 
-	mApp.AddViewWindow(viewerWindow)
-
-	mApp.SetFuncGetModels(func() [][]*pmx.PmxModel {
-		return [][]*pmx.PmxModel{{model}}
+		viewerWindowList.Run()
 	})
-
-	motion := vmd.NewVmdMotion("")
-
-	mApp.SetFuncGetMotions(func() [][]*vmd.VmdMotion {
-		return [][]*vmd.VmdMotion{{motion}}
-	})
-
-	mApp.Center()
-	mApp.RunViewer()
 }

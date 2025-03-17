@@ -1,2 +1,54 @@
 [
+    {
+        "id": "&MuModelViewer",
+        "translation": "&MuModelViewer"
+    },
+    {
+        "id": "使い方説明",
+        "translation": "如果将工具与 pmx 或 x 文件扩展名关联，则可以通过双击文件来启动查看器。\n您还可以应用动作并切换材质显示。"
+    },
+    {
+        "id": "ビューワー",
+        "translation": "查看器"
+    },
+    {
+        "id": "設定",
+        "translation": "设置"
+    },
+    {
+        "id": "設定説明",
+        "translation": "设置说明"
+    },
+    {
+        "id": "設定保存",
+        "translation": "保存设置并退出"
+    },
+    {
+        "id": "ファイル",
+        "translation": "文件"
+    },
+    {
+        "id": "材質リスト",
+        "translation": "材质列表"
+    },
+    {
+        "id": "材質リスト説明",
+        "translation": "显示所选材质。默认情况下，所有材质都被选中并显示。\n选择材质后，仅显示所选材质。\n按住 Ctrl 键并单击可以反转选择状态。"
+    },
+    {
+        "id": "モデルファイル",
+        "translation": "模型文件"
+    },
+    {
+        "id": "モデルファイルを選択してください",
+        "translation": "请选择模型文件\n可以打开 Pmx 或 X 文件。"
+    },
+    {
+        "id": "モーションファイル",
+        "translation": "动作文件"
+    },
+    {
+        "id": "モーションファイルを選択してください",
+        "translation": "请选择动作文件\n可以打开 Vmd 或 Vpd 文件。"
+    }
 ]
