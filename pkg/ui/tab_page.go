@@ -19,7 +19,7 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 	player := widget.NewMotionPlayer()
 
 	materialListbox := widget.NewMaterialListbox(
-		mi18n.T("材質リスト説明"), func(cw *controller.ControlWindow, indexes []int) {
+		"", func(cw *controller.ControlWindow, indexes []int) {
 			cw.StoreSelectedMaterialIndexes(0, 0, indexes)
 		},
 	)
@@ -76,10 +76,6 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 				declarative.Composite{
 					Layout: declarative.VBox{},
 					Children: []declarative.Widget{
-						declarative.TextLabel{
-							Text: mi18n.T("ツール説明"),
-						},
-						declarative.VSeparator{},
 						pmxLoadPicker.Widgets(),
 						vmdLoadPicker.Widgets(),
 						declarative.VSeparator{},

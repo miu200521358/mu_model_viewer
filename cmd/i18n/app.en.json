@@ -1,2 +1,54 @@
 [
+    {
+        "id": "&MuModelViewer",
+        "translation": "&MuModelViewer"
+    },
+    {
+        "id": "使い方説明",
+        "translation": "If you associate the tool with the pmx or x file extension, you can launch the viewer by double-clicking the file.\nYou can also apply motions and toggle material display."
+    },
+    {
+        "id": "ビューワー",
+        "translation": "Viewer"
+    },
+    {
+        "id": "設定",
+        "translation": "Settings"
+    },
+    {
+        "id": "設定説明",
+        "translation": "Settings Description"
+    },
+    {
+        "id": "設定保存",
+        "translation": "Save settings and exit"
+    },
+    {
+        "id": "ファイル",
+        "translation": "File"
+    },
+    {
+        "id": "材質リスト",
+        "translation": "Material List"
+    },
+    {
+        "id": "材質リスト説明",
+        "translation": "Displays the selected materials. By default, all materials are selected and displayed.\nWhen you select a material, only the selected material will be displayed.\nYou can invert the selection by holding the Ctrl key while clicking."
+    },
+    {
+        "id": "モデルファイル",
+        "translation": "Model File"
+    },
+    {
+        "id": "モデルファイルを選択してください",
+        "translation": "Please select a model file\nPmx or X files can be opened."
+    },
+    {
+        "id": "モーションファイル",
+        "translation": "Motion File"
+    },
+    {
+        "id": "モーションファイルを選択してください",
+        "translation": "Please select a motion file\nVmd or Vpd files can be opened."
+    }
 ]
