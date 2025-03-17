@@ -13,7 +13,7 @@ import (
 	"github.com/miu200521358/walk/pkg/walk"
 )
 
-func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
+func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	var fileTab *walk.TabPage
 
 	player := widget.NewMotionPlayer()
@@ -67,32 +67,31 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 		}
 	})
 
-	return []declarative.TabPage{
-		{
-			Title:    mi18n.T("ファイル"),
-			AssignTo: &fileTab,
-			Layout:   declarative.VBox{},
-			Background: declarative.SystemColorBrush{
-				Color: walk.SysColorInactiveCaption,
-			},
-			Children: []declarative.Widget{
-				declarative.Composite{
-					Layout: declarative.VBox{},
-					Children: []declarative.Widget{
-						pmxLoadPicker.Widgets(),
-						vmdLoadPicker.Widgets(),
-						declarative.VSeparator{},
-						declarative.TextLabel{
-							Text: mi18n.T("材質リスト"),
-						},
-						declarative.TextLabel{
-							Text: mi18n.T("材質リスト説明"),
-						},
-						materialListbox.Widgets(),
-						declarative.VSpacer{},
-						player.Widgets(),
-						declarative.VSpacer{},
+	return declarative.TabPage{
+
+		Title:    mi18n.T("ファイル"),
+		AssignTo: &fileTab,
+		Layout:   declarative.VBox{},
+		Background: declarative.SystemColorBrush{
+			Color: walk.SysColorInactiveCaption,
+		},
+		Children: []declarative.Widget{
+			declarative.Composite{
+				Layout: declarative.VBox{},
+				Children: []declarative.Widget{
+					pmxLoadPicker.Widgets(),
+					vmdLoadPicker.Widgets(),
+					declarative.VSeparator{},
+					declarative.TextLabel{
+						Text: mi18n.T("材質リスト"),
 					},
+					declarative.TextLabel{
+						Text: mi18n.T("材質リスト説明"),
+					},
+					materialListbox.Widgets(),
+					declarative.VSpacer{},
+					player.Widgets(),
+					declarative.VSpacer{},
 				},
 			},
 		},
