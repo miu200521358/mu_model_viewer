@@ -35,6 +35,9 @@ func NewTabPages(mWidgets *controller.MWidgets) []declarative.TabPage {
 
 				// モデルの読み込みが成功したら材質リスト更新
 				materialListbox.SetMaterials(model.Materials)
+
+				// フォーカスを当てる
+				cw.SetFocus()
 			} else {
 				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 			}
