@@ -1,10 +1,13 @@
 package ui
 
 import (
+	"path/filepath"
+
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
+	"github.com/miu200521358/mlib_go/pkg/infrastructure/mfile"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -18,8 +21,9 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 
 	player := widget.NewMotionPlayer()
 
-	materialListbox := widget.NewMaterialListbox(
-		"", func(cw *controller.ControlWindow, indexes []int) {
+	materialTableView := widget.NewMaterialTableView(
+		mi18n.T("材質ビュー説明"),
+		func(cw *controller.ControlWindow, indexes []int) {
 			cw.StoreSelectedMaterialIndexes(0, 0, indexes)
 		},
 	)
@@ -33,8 +37,26 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 				model := data.(*pmx.PmxModel)
 				cw.StoreModel(0, 0, model)
 
-				// モデルの読み込みが成功したら材質リスト更新
-				materialListbox.SetMaterials(model.Materials)
+				model.Textures.ForEach(func(index int, texture *pmx.Texture) {
+					// モデルパス + テクスチャ相対パス
+					texPath := filepath.Join(filepath.Dir(model.Path()), texture.Name())
+
+					// テクスチャの有効判定
+					texture.SetValid(true)
+
+					valid, err := mfile.ExistsFile(texPath)
+					if !valid || err != nil {
+						texture.SetValid(false)
+					}
+
+					// 画像を読み込み
+					if _, err := mfile.LoadImage(texPath); err != nil {
+						texture.SetValid(false)
+					}
+				})
+
+				// モデルの読み込みが成功したら材質テーブル更新
+				materialTableView.MaterialModel.ResetRows(model)
 
 				// フォーカスを当てる
 				cw.SetFocus()
@@ -59,7 +81,7 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		},
 	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialListbox)
+	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialTableView)
 	mWidgets.SetOnLoaded(func() {
 		// 読み込みが完了したら、モデルのパスを設定
 		if path, err := usecase.LoadModelPath(); err == nil {
@@ -83,12 +105,12 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					vmdLoadPicker.Widgets(),
 					declarative.VSeparator{},
 					declarative.TextLabel{
-						Text: mi18n.T("材質リスト"),
+						Text: mi18n.T("材質ビュー"),
+						OnMouseDown: func(x, y int, button walk.MouseButton) {
+							mlog.I(mi18n.T("材質ビュー説明"))
+						},
 					},
-					declarative.TextLabel{
-						Text: mi18n.T("材質リスト説明"),
-					},
-					materialListbox.Widgets(),
+					materialTableView.Widgets(),
 					declarative.VSpacer{},
 					player.Widgets(),
 					declarative.VSpacer{},

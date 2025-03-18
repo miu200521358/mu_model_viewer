@@ -28,12 +28,12 @@
         "translation": "File"
     },
     {
-        "id": "材質リスト",
-        "translation": "Material List"
+        "id": "材質ビュー",
+        "translation": "Material View"
     },
     {
-        "id": "材質リスト説明",
-        "translation": "Displays the selected materials. By default, all materials are selected and displayed.\nWhen you select a material, only the selected material will be displayed.\nYou can invert the selection by holding the Ctrl key while clicking."
+        "id": "材質ビュー説明",
+        "translation_en": "Displays the selected material.\nInitially, all materials are selected and displayed.\nSelecting a material toggles its selection state.\nHolding Shift while selecting toggles the selection state of materials within the range.\nIf a texture cannot be interpreted, the text color will be displayed in red."
     },
     {
         "id": "モデルファイル",
