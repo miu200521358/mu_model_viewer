@@ -50,5 +50,21 @@
     {
         "id": "モーションファイルを選択してください",
         "translation": "请选择动作文件\n可以打开 Vmd 或 Vpd 文件。"
+    },
+    {
+        "id": "全",
+        "translation_zh": "全"
+    },
+    {
+        "id": "反",
+        "translation_zh": "反"
+    },
+    {
+        "id": "全ボタン説明",
+        "translation_zh": "显示所有材质。"
+    },
+    {
+        "id": "反ボタン説明",
+        "translation_zh": "反转所有材质的选中状态。"
     }
 ]

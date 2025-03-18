@@ -81,7 +81,33 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		},
 	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialTableView)
+	// 全選択ボタン
+	allBtn := widget.NewMPushButton()
+	allBtn.SetLabel(mi18n.T("全"))
+	allBtn.SetTooltip(mi18n.T("全ボタン説明"))
+	allBtn.SetMaxSize(declarative.Size{Width: 50})
+	allBtn.SetOnClicked(func(cw *controller.ControlWindow) {
+		for i := range materialTableView.MaterialModel.RowCount() {
+			materialTableView.MaterialModel.SetChecked(i, true)
+		}
+		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
+		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
+	})
+
+	// 選択反転ボタン
+	revertBtn := widget.NewMPushButton()
+	revertBtn.SetLabel(mi18n.T("反"))
+	revertBtn.SetTooltip(mi18n.T("反ボタン説明"))
+	revertBtn.SetMaxSize(declarative.Size{Width: 50})
+	revertBtn.SetOnClicked(func(cw *controller.ControlWindow) {
+		for i := range materialTableView.MaterialModel.RowCount() {
+			materialTableView.MaterialModel.SetChecked(i, !materialTableView.MaterialModel.Checked(i))
+		}
+		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
+		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
+	})
+
+	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialTableView, allBtn, revertBtn)
 	mWidgets.SetOnLoaded(func() {
 		// 読み込みが完了したら、モデルのパスを設定
 		if path, err := usecase.LoadModelPath(); err == nil {
@@ -90,7 +116,6 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	})
 
 	return declarative.TabPage{
-
 		Title:    mi18n.T("ファイル"),
 		AssignTo: &fileTab,
 		Layout:   declarative.VBox{},
@@ -104,10 +129,18 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					pmxLoadPicker.Widgets(),
 					vmdLoadPicker.Widgets(),
 					declarative.VSeparator{},
-					declarative.TextLabel{
-						Text: mi18n.T("材質ビュー"),
-						OnMouseDown: func(x, y int, button walk.MouseButton) {
-							mlog.I(mi18n.T("材質ビュー説明"))
+					declarative.Composite{
+						Layout: declarative.HBox{},
+						Children: []declarative.Widget{
+							declarative.TextLabel{
+								Text: mi18n.T("材質ビュー"),
+								OnMouseDown: func(x, y int, button walk.MouseButton) {
+									mlog.I(mi18n.T("材質ビュー説明"))
+								},
+							},
+							declarative.HSpacer{},
+							allBtn.Widgets(),
+							revertBtn.Widgets(),
 						},
 					},
 					materialTableView.Widgets(),

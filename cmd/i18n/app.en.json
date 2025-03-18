@@ -50,5 +50,21 @@
     {
         "id": "モーションファイルを選択してください",
         "translation": "Please select a motion file\nVmd or Vpd files can be opened."
+    },
+    {
+        "id": "全",
+        "translation_en": "All"
+    },
+    {
+        "id": "反",
+        "translation_en": "Invert"
+    },
+    {
+        "id": "全ボタン説明",
+        "translation_en": "Displays all materials."
+    },
+    {
+        "id": "反ボタン説明",
+        "translation_en": "Inverts the selection state of all materials."
     }
 ]
