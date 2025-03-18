@@ -33,7 +33,7 @@
     },
     {
         "id": "材質ビュー説明",
-        "translation_en": "Displays the selected material.\nInitially, all materials are selected and displayed.\nSelecting a material toggles its selection state.\nHolding Shift while selecting toggles the selection state of materials within the range.\nIf a texture cannot be interpreted, the text color will be displayed in red."
+        "translation": "Displays the selected material.\nInitially, all materials are selected and displayed.\nSelecting a material toggles its selection state.\nHolding Shift while selecting toggles the selection state of materials within the range.\nIf a texture cannot be interpreted, the text color will be displayed in red."
     },
     {
         "id": "モデルファイル",
@@ -53,18 +53,18 @@
     },
     {
         "id": "全",
-        "translation_en": "All"
+        "translation": "All"
     },
     {
         "id": "反",
-        "translation_en": "Invert"
+        "translation": "Invert"
     },
     {
         "id": "全ボタン説明",
-        "translation_en": "Displays all materials."
+        "translation": "Displays all materials."
     },
     {
         "id": "反ボタン説明",
-        "translation_en": "Inverts the selection state of all materials."
+        "translation": "Inverts the selection state of all materials."
     }
 ]

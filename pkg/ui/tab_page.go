@@ -87,8 +87,8 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	allBtn.SetTooltip(mi18n.T("全ボタン説明"))
 	allBtn.SetMaxSize(declarative.Size{Width: 50})
 	allBtn.SetOnClicked(func(cw *controller.ControlWindow) {
-		for i := range materialTableView.MaterialModel.RowCount() {
-			materialTableView.MaterialModel.SetChecked(i, true)
+		for _, record := range materialTableView.MaterialModel.Records {
+			record.Checked = true
 		}
 		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
 		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
@@ -100,8 +100,8 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	revertBtn.SetTooltip(mi18n.T("反ボタン説明"))
 	revertBtn.SetMaxSize(declarative.Size{Width: 50})
 	revertBtn.SetOnClicked(func(cw *controller.ControlWindow) {
-		for i := range materialTableView.MaterialModel.RowCount() {
-			materialTableView.MaterialModel.SetChecked(i, !materialTableView.MaterialModel.Checked(i))
+		for _, record := range materialTableView.MaterialModel.Records {
+			record.Checked = !record.Checked
 		}
 		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
 		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
