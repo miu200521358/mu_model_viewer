@@ -15,6 +15,7 @@ import (
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
+	"github.com/miu200521358/mlib_go/pkg/config/mproc"
 	"github.com/miu200521358/mlib_go/pkg/domain/state"
 	"github.com/miu200521358/mlib_go/pkg/interface/app"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
@@ -26,8 +27,7 @@ var env string
 func init() {
 	runtime.LockOSThread()
 
-	// システム上の半分の論理プロセッサを使用させる
-	runtime.GOMAXPROCS(max(1, int(runtime.NumCPU()/4)))
+	mproc.SetMaxProcess(false)
 
 	walk.AppendToWalkInit(func() {
 		walk.MustRegisterWindowClass(controller.ConsoleViewClass)
