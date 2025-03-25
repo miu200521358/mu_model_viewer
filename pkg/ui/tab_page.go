@@ -33,6 +33,11 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("モデルファイル"),
 		mi18n.T("モデルファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			if path == "" {
+				cw.StoreModel(0, 0, nil)
+				return
+			}
+
 			if data, err := rep.Load(path); err == nil {
 				model := data.(*pmx.PmxModel)
 				cw.StoreModel(0, 0, model)
@@ -71,6 +76,11 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("モーションファイル"),
 		mi18n.T("モーションファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			if path == "" {
+				cw.StoreMotion(0, 0, nil)
+				return
+			}
+
 			if data, err := rep.Load(path); err == nil {
 				motion := data.(*vmd.VmdMotion)
 				player.Reset(motion.MaxFrame())
