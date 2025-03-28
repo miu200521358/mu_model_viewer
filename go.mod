@@ -7,7 +7,10 @@ require (
 	github.com/miu200521358/walk v0.0.4
 )
 
-require github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 // indirect
+require (
+	github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 // indirect
+	github.com/tiendc/go-deepcopy v1.5.1 // indirect
+)
 
 require (
 	github.com/ftrvxmtrx/tga v0.0.0-20150524081124-bd8e8d5be13a // indirect
