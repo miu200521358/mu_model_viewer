@@ -42,7 +42,7 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 				model := data.(*pmx.PmxModel)
 				cw.StoreModel(0, 0, model)
 
-				model.Textures.ForEach(func(index int, texture *pmx.Texture) {
+				model.Textures.ForEach(func(index int, texture *pmx.Texture) bool {
 					// モデルパス + テクスチャ相対パス
 					texPath := filepath.Join(filepath.Dir(model.Path()), texture.Name())
 
@@ -58,6 +58,8 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					if _, err := mfile.LoadImage(texPath); err != nil {
 						texture.SetValid(false)
 					}
+
+					return true
 				})
 
 				// モデルの読み込みが成功したら材質テーブル更新
