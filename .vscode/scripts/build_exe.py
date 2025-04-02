@@ -20,7 +20,7 @@ app_version = config_dict.get('Version')
 print(f"app_name: {app_name}")
 print(f"app_version: {app_version}")
 
-all_rebuild = "-a" if os.environ.get('ENV') == 'prod' else ""
+all_rebuild = "-a"
 env_name = "dev" if os.environ.get('ENV') == 'dev' else "prod" if os.environ.get('ENV') == 'prod' else "stg"
 
 # Build command
