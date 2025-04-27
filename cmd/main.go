@@ -14,6 +14,7 @@ import (
 	"github.com/miu200521358/walk/pkg/walk"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
+	"github.com/miu200521358/mlib_go/pkg/config/merr"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mproc"
 	"github.com/miu200521358/mlib_go/pkg/domain/state"
@@ -70,7 +71,7 @@ func main() {
 				ui.NewMenuItems(), []declarative.TabPage{ui.NewTabPage(widgets)}, widgets.SetEnabledInPlaying,
 				widths[0], heights[0], positionXs[0], positionYs[0], viewerCount)
 			if err != nil {
-				app.ShowErrorDialog(appConfig, err)
+				merr.ShowFatalErrorDialog(appConfig, err)
 				return
 			}
 
@@ -83,7 +84,7 @@ func main() {
 
 	// GL初期化
 	if err := glfw.Init(); err != nil {
-		app.ShowErrorDialog(appConfig, fmt.Errorf("failed to initialize GLFW: %v", err))
+		merr.ShowFatalErrorDialog(appConfig, fmt.Errorf("failed to initialize GLFW: %v", err))
 		return
 	}
 
@@ -93,7 +94,7 @@ func main() {
 			nIdx := n + 1
 			if err := viewerWindowList.Add("Viewer",
 				widths[nIdx], heights[nIdx], positionXs[nIdx], positionYs[nIdx]); err != nil {
-				app.ShowErrorDialog(appConfig, err)
+				merr.ShowFatalErrorDialog(appConfig, err)
 				return
 			}
 		}

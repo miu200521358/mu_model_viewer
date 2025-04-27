@@ -68,7 +68,7 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 				// フォーカスを当てる
 				cw.SetFocus()
 			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+				mlog.ET(mi18n.T("読み込み失敗"), err, "")
 			}
 		},
 	)
@@ -88,7 +88,7 @@ func NewTabPage(mWidgets *controller.MWidgets) declarative.TabPage {
 				player.Reset(motion.MaxFrame())
 				cw.StoreMotion(0, 0, motion)
 			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+				mlog.ET(mi18n.T("読み込み失敗"), err, "")
 			}
 		},
 	)
