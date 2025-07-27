@@ -68,7 +68,7 @@ func main() {
 			}
 
 			controlWindow, err = controller.NewControlWindow(shared, appConfig,
-				ui.NewMenuItems(), []declarative.TabPage{ui.NewTabPage(widgets)}, widgets.SetEnabledInPlaying,
+				ui.NewMenuItems(), []declarative.TabPage{ui.NewTabPage(widgets)},
 				widths[0], heights[0], positionXs[0], positionYs[0], viewerCount)
 			if err != nil {
 				merr.ShowFatalErrorDialog(appConfig, err)
