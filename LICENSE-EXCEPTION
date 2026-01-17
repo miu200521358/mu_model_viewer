@@ -1,0 +1,51 @@
+Official Binary Commercial Use Exception
+
+This project is primarily licensed under the
+Creative Commons Attribution-NonCommercial 4.0 International License
+(CC-BY-NC-4.0).
+
+Notwithstanding the terms of CC-BY-NC-4.0, the copyright holder grants
+an additional permission as follows:
+
+1. Official Binary Exception
+
+The official binary releases (including executable files) of this
+software, when built and distributed solely by the copyright holder,
+may be used for commercial purposes.
+
+This permission applies only to binaries that:
+- are built by the copyright holder, and
+- are distributed through official channels designated by the
+  copyright holder.
+
+2. No Source Code Commercial Rights
+
+This exception does NOT grant any rights to:
+- use the source code for commercial purposes,
+- modify the source code for commercial purposes,
+- build derivative binaries for commercial purposes, or
+- redistribute modified or rebuilt binaries for commercial purposes.
+
+Any use of the source code, or binaries built by third parties,
+remains strictly subject to the CC-BY-NC-4.0 license and is
+non-commercial only.
+
+3. Third-Party Licenses
+
+This project may include third-party components licensed under
+permissive open source licenses (e.g., BSD 3-Clause).
+
+Such third-party components are governed by their respective licenses
+and are not subject to the non-commercial restriction of this project.
+This exception does not alter the terms of those third-party licenses.
+
+4. No Implied Endorsement
+
+Use of the official binaries for commercial purposes does not imply
+any endorsement, sponsorship, or affiliation by the copyright holder,
+unless explicitly stated in writing.
+
+5. Reservation of Rights
+
+All rights not expressly granted by this exception are reserved by
+the copyright holder.
