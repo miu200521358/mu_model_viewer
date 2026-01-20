@@ -28,17 +28,6 @@
       },
     },
     {
-      "name": "[stg] Build",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${workspaceFolder}/.vscode/scripts/build_exe.py",
-      "cwd": "${workspaceFolder}/cmd",
-      "env": {
-        "WORKSPACE_FOLDER": "${workspaceFolder}",
-        "ENV": "stg"
-      },
-    },
-    {
       "name": "[prod] Build",
       "type": "debugpy",
       "request": "launch",
