@@ -13,6 +13,7 @@
       "preLaunchTask": "go: mod tidy",
       "env": {
         "WORKSPACE_FOLDER": "${workspaceFolder}",
+        "GOEXPERIMENT": "nodwarf5",
         "ENV": "debug"
       },
     },
