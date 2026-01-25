@@ -66,5 +66,25 @@
     {
         "id": "反ボタン説明",
         "translation": "反转所有材质的选中状态。"
+    },
+    {
+        "id": "PMX保存",
+        "translation": "保存 X → PMX"
+    },
+    {
+        "id": "PMX保存説明",
+        "translation": "将已加载的 X 文件保存为 PMX。"
+    },
+    {
+        "id": "PMX保存完了",
+        "translation": "PMX保存完成"
+    },
+    {
+        "id": "Xファイルが読み込まれていません",
+        "translation": "未加载 X 文件。"
+    },
+    {
+        "id": "保存先パスが不正です",
+        "translation": "保存路径无效。"
     }
 ]

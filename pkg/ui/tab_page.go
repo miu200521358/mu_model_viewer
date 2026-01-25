@@ -6,9 +6,11 @@ package ui
 import (
 	"errors"
 	"path/filepath"
+	"strings"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_common"
+	"github.com/miu200521358/mlib_go/pkg/adapter/io_model"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
 	"github.com/miu200521358/mlib_go/pkg/domain/motion"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller"
@@ -83,6 +85,29 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		materialView.InvertChecked()
 	})
 
+	var lastModelPath string
+
+	pmxSaveButton := widget.NewMPushButton()
+	pmxSaveButton.SetLabel(translate(translator, "PMX保存"))
+	pmxSaveButton.SetTooltip(translate(translator, "PMX保存説明"))
+	pmxSaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		saveModelAsPmx(logger, translator, cw, lastModelPath, 0, 0)
+	})
+
+	updatePmxSaveState := func(modelData *model.PmxModel, path string) {
+		lastModelPath = ""
+		if modelData != nil {
+			lastModelPath = modelData.Path()
+		}
+		if lastModelPath == "" {
+			lastModelPath = path
+		}
+		if pmxSaveButton == nil || pmxSaveButton.PushButton == nil {
+			return
+		}
+		pmxSaveButton.SetEnabled(isXPath(lastModelPath))
+	}
+
 	pmxLoadPicker := widget.NewPmxXLoadFilePicker(
 		userConfig,
 		translator,
@@ -90,7 +115,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		translate(translator, "モデルファイル"),
 		translate(translator, "モデルファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
-			loadModel(logger, translator, cw, rep, path, materialView, 0, 0)
+			modelData := loadModel(logger, translator, cw, rep, path, materialView, 0, 0)
+			updatePmxSaveState(modelData, path)
 		},
 	)
 
@@ -105,7 +131,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		},
 	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialView, allMaterialButton, invertMaterialButton)
+	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialView, allMaterialButton, invertMaterialButton, pmxSaveButton)
 
 	mWidgets.SetOnLoaded(func() {
 		if mWidgets == nil || mWidgets.Window() == nil {
@@ -116,6 +142,9 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 				w.SetEnabledInPlaying(playing)
 			}
 		})
+		if pmxSaveButton != nil && pmxSaveButton.PushButton != nil {
+			pmxSaveButton.SetEnabled(false)
+		}
 		if initialModelPath != "" {
 			pmxLoadPicker.SetPath(initialModelPath)
 		}
@@ -146,6 +175,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 					},
 					materialView.Widgets(),
 					declarative.VSeparator{},
+					pmxSaveButton.Widgets(),
+					declarative.VSeparator{},
 					player.Widgets(),
 				},
 			},
@@ -161,16 +192,16 @@ func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, 
 }
 
 // loadModel はモデル読み込み結果をControlWindowへ反映する。
-func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) {
+func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
 	if cw == nil {
-		return
+		return nil
 	}
 	if path == "" {
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
 		cw.SetModel(windowIndex, modelIndex, nil)
-		return
+		return nil
 	}
 	if rep == nil {
 		logLoadFailed(logger, translator, errors.New("モデル読み込みリポジトリがありません"))
@@ -178,7 +209,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 			materialView.ResetRows(nil)
 		}
 		cw.SetModel(windowIndex, modelIndex, nil)
-		return
+		return nil
 	}
 	data, err := rep.Load(path)
 	if err != nil {
@@ -187,7 +218,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 			materialView.ResetRows(nil)
 		}
 		cw.SetModel(windowIndex, modelIndex, nil)
-		return
+		return nil
 	}
 	modelData, ok := data.(*model.PmxModel)
 	if !ok {
@@ -196,7 +227,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 			materialView.ResetRows(nil)
 		}
 		cw.SetModel(windowIndex, modelIndex, nil)
-		return
+		return nil
 	}
 	if modelData.Bones != nil {
 		if inserter, ok := any(modelData.Bones).(overrideBoneInserter); ok {
@@ -210,6 +241,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		materialView.ResetRows(modelData)
 	}
 	cw.SetModel(windowIndex, modelIndex, modelData)
+	return modelData
 }
 
 // validateModelTextures はモデルのテクスチャ有効性を検証する。
@@ -277,12 +309,49 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 	cw.SetMotion(windowIndex, modelIndex, motionData)
 }
 
+// saveModelAsPmx はXモデルをPMX形式で保存する。
+func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
+	if cw == nil {
+		return
+	}
+	if !isXPath(modelPath) {
+		logSaveFailed(logger, translator, errors.New(translate(translator, "Xファイルが読み込まれていません")))
+		return
+	}
+	modelData := cw.Model(windowIndex, modelIndex)
+	if modelData == nil {
+		logSaveFailed(logger, translator, errors.New(translate(translator, "Xファイルが読み込まれていません")))
+		return
+	}
+	outputPath := buildPmxOutputPath(modelPath)
+	if outputPath == "" || !mfile.CanSave(outputPath) {
+		logSaveFailed(logger, translator, errors.New(translate(translator, "保存先パスが不正です")))
+		return
+	}
+	if err := io_model.NewModelRepository().Save(outputPath, modelData, io_common.SaveOptions{}); err != nil {
+		logSaveFailed(logger, translator, err)
+		return
+	}
+	if logger == nil {
+		logger = logging.DefaultLogger()
+	}
+	logger.Info("%s: %s", translate(translator, "PMX保存完了"), filepath.Base(outputPath))
+}
+
 // logLoadFailed は読み込み失敗ログを出力する。
 func logLoadFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
 	logErrorTitle(logger, translate(translator, "読み込み失敗"), err)
+}
+
+// logSaveFailed は保存失敗ログを出力する。
+func logSaveFailed(logger logging.ILogger, translator i18n.II18n, err error) {
+	if logger == nil {
+		logger = logging.DefaultLogger()
+	}
+	logErrorTitle(logger, translate(translator, "保存失敗"), err)
 }
 
 // logErrorTitle はタイトル付きエラーを出力する。
@@ -297,6 +366,23 @@ func logErrorTitle(logger logging.ILogger, title string, err error) {
 		return
 	}
 	logger.Error("%s: %s", title, err.Error())
+}
+
+// isXPath はXファイルか判定する。
+func isXPath(path string) bool {
+	if path == "" {
+		return false
+	}
+	return strings.EqualFold(filepath.Ext(path), ".x")
+}
+
+// buildPmxOutputPath はXファイルと同じ場所にPMX出力パスを生成する。
+func buildPmxOutputPath(path string) string {
+	dir, name, _ := mfile.SplitPath(path)
+	if dir == "" || name == "" {
+		return ""
+	}
+	return filepath.Join(dir, name+".pmx")
 }
 
 // translate は翻訳済み文言を返す。

@@ -66,5 +66,25 @@
     {
         "id": "反ボタン説明",
         "translation": "Inverts the selection state of all materials."
+    },
+    {
+        "id": "PMX保存",
+        "translation": "Save X → PMX"
+    },
+    {
+        "id": "PMX保存説明",
+        "translation": "Save the loaded X file as PMX."
+    },
+    {
+        "id": "PMX保存完了",
+        "translation": "PMX save completed"
+    },
+    {
+        "id": "Xファイルが読み込まれていません",
+        "translation": "No X file is loaded."
+    },
+    {
+        "id": "保存先パスが不正です",
+        "translation": "The output path is invalid."
     }
 ]

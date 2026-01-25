@@ -66,5 +66,25 @@
     {
         "id": "反ボタン説明",
         "translation": "모든 재질의 선택 상태를 반전합니다."
+    },
+    {
+        "id": "PMX保存",
+        "translation": "PMX 저장"
+    },
+    {
+        "id": "PMX保存説明",
+        "translation": "로드한 X 파일을 PMX로 저장합니다."
+    },
+    {
+        "id": "PMX保存完了",
+        "translation": "X → PMX 저장 완료"
+    },
+    {
+        "id": "Xファイルが読み込まれていません",
+        "translation": "X 파일이 로드되지 않았습니다."
+    },
+    {
+        "id": "保存先パスが不正です",
+        "translation": "저장 경로가 올바르지 않습니다."
     }
 ]

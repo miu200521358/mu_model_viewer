@@ -66,5 +66,25 @@
     {
         "id": "反ボタン説明",
         "translation": "全ての材質の選択状態を反転します"
+    },
+    {
+        "id": "PMX保存",
+        "translation": "X → PMX保存"
+    },
+    {
+        "id": "PMX保存説明",
+        "translation": "読み込んだXファイルをPMXで保存します"
+    },
+    {
+        "id": "PMX保存完了",
+        "translation": "PMX保存完了"
+    },
+    {
+        "id": "Xファイルが読み込まれていません",
+        "translation": "Xファイルが読み込まれていません"
+    },
+    {
+        "id": "保存先パスが不正です",
+        "translation": "保存先パスが不正です"
     }
 ]
