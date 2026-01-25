@@ -7,6 +7,7 @@ import (
 	"errors"
 	"path/filepath"
 
+	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_common"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
 	"github.com/miu200521358/mlib_go/pkg/domain/motion"
@@ -45,6 +46,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	}
 
 	player := widget.NewMotionPlayer(translator)
+	player.SetAudioPlayer(audio_api.NewAudioPlayer(), userConfig)
 
 	materialView := widget.NewMaterialTableView(
 		translator,

@@ -7,7 +7,9 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/miu200521358/walk/pkg/walk"
@@ -49,10 +51,7 @@ var appI18nFiles embed.FS
 // main は mu_model_viewer を起動する。
 func main() {
 	viewerCount := 1
-	initialModelPath := ""
-	if len(os.Args) > 1 {
-		initialModelPath = os.Args[1]
-	}
+	initialModelPath := findInitialModelPath(os.Args)
 
 	appConfig, loadErr := config.LoadAppConfig(appFiles)
 	if loadErr != nil {
@@ -155,4 +154,25 @@ func main() {
 		viewerManager.InitOverlay()
 		viewerManager.Run()
 	})
+}
+
+// findInitialModelPath は起動引数からモデルパスを抽出する。
+func findInitialModelPath(args []string) string {
+	if len(args) <= 1 {
+		return ""
+	}
+	for i := 1; i < len(args); i++ {
+		path := strings.TrimSpace(args[i])
+		path = strings.Trim(path, "\"")
+		path = strings.Trim(path, "'")
+		if path == "" {
+			continue
+		}
+		ext := strings.ToLower(filepath.Ext(path))
+		switch ext {
+		case ".pmx", ".x":
+			return path
+		}
+	}
+	return ""
 }
