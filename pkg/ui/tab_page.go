@@ -382,7 +382,7 @@ func buildPmxOutputPath(path string) string {
 	if dir == "" || name == "" {
 		return ""
 	}
-	return filepath.Join(dir, name+".pmx")
+	return mfile.CreateOutputPath(filepath.Join(dir, name+".pmx"), "")
 }
 
 // translate は翻訳済み文言を返す。
