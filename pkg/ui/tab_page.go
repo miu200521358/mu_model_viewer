@@ -204,7 +204,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		return nil
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, errors.New("モデル読み込みリポジトリがありません"))
+		logLoadFailed(logger, translator, errors.New(translate(translator, "モデル読み込みリポジトリがありません")))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -222,7 +222,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 	}
 	modelData, ok := data.(*model.PmxModel)
 	if !ok {
-		logLoadFailed(logger, translator, errors.New("モデル形式が不正です"))
+		logLoadFailed(logger, translator, errors.New(translate(translator, "モデル形式が不正です")))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -287,7 +287,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 		return
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, errors.New("モーション読み込みリポジトリがありません"))
+		logLoadFailed(logger, translator, errors.New(translate(translator, "モーション読み込みリポジトリがありません")))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
@@ -299,7 +299,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 	}
 	motionData, ok := data.(*motion.VmdMotion)
 	if !ok {
-		logLoadFailed(logger, translator, errors.New("モーション形式が不正です"))
+		logLoadFailed(logger, translator, errors.New(translate(translator, "モーション形式が不正です")))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}

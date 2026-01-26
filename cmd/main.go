@@ -79,20 +79,20 @@ func main() {
 
 	iconImage, iconErr := config.LoadAppIconImage(appFiles, appConfig)
 	if iconErr != nil {
-		logger.Error("アプリアイコンの読込に失敗しました: %s", iconErr.Error())
+		logger.Error(i18n.T("アプリアイコンの読込に失敗しました: %s"), iconErr.Error())
 	}
 	var appIcon *walk.Icon
 	if iconImage != nil {
 		appIcon, iconErr = walk.NewIconFromImageForDPI(iconImage, 96)
 		if iconErr != nil {
-			logger.Error("アプリアイコンの生成に失敗しました: %s", iconErr.Error())
+			logger.Error(i18n.T("アプリアイコンの生成に失敗しました: %s"), iconErr.Error())
 		}
 	}
 
 	shared := state.NewSharedState(viewerCount)
 	sharedState, ok := shared.(*state.SharedState)
 	if !ok {
-		err.ShowFatalErrorDialog(appConfig, fmt.Errorf("共有状態の初期化に失敗しました"))
+		err.ShowFatalErrorDialog(appConfig, fmt.Errorf(i18n.T("共有状態の初期化に失敗しました")))
 		return
 	}
 
@@ -135,7 +135,7 @@ func main() {
 	}()
 
 	if glfwErr := glfw.Init(); glfwErr != nil {
-		err.ShowFatalErrorDialog(appConfig, fmt.Errorf("GLFWの初期化に失敗しました: %w", glfwErr))
+		err.ShowFatalErrorDialog(appConfig, fmt.Errorf(i18n.T("GLFWの初期化に失敗しました: %w"), glfwErr))
 		return
 	}
 
