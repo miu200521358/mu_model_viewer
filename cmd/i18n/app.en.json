@@ -77,7 +77,7 @@
     },
     {
         "id": "PMX保存完了",
-        "translation": "PMX save completed"
+        "translation": "PMX save completed: %s"
     },
     {
         "id": "Xファイルが読み込まれていません",

@@ -231,9 +231,8 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 	}
 	if modelData.Bones != nil {
 		if inserter, ok := any(modelData.Bones).(overrideBoneInserter); ok {
-			if err := inserter.InsertShortageOverrideBones(); err != nil {
-				logErrorTitle(logger, translate(translator, "システム用ボーン追加失敗"), err)
-			}
+			// システム用ボーンの追加に失敗しても何もメッセージは出さない
+			inserter.InsertShortageOverrideBones()
 		}
 	}
 	if materialView != nil {
@@ -335,7 +334,7 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logger.Info("%s: %s", translate(translator, "PMX保存完了"), filepath.Base(outputPath))
+	logger.Info(translate(translator, "PMX保存完了"), filepath.Base(outputPath))
 }
 
 // logLoadFailed は読み込み失敗ログを出力する。
