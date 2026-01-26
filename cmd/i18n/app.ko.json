@@ -73,15 +73,15 @@
     },
     {
         "id": "PMX保存説明",
-        "translation": "로드한 X 파일을 PMX로 저장합니다."
+        "translation": "로드한 X 또는 PMD 파일을 PMX로 저장합니다."
     },
     {
         "id": "PMX保存完了",
-        "translation": "X → PMX 저장 완료: %s"
+        "translation": "PMX 저장 완료: %s"
     },
     {
-        "id": "Xファイルが読み込まれていません",
-        "translation": "X 파일이 로드되지 않았습니다."
+        "id": "XまたはPMDファイルが読み込まれていません",
+        "translation": "X 또는 PMD 파일이 로드되지 않았습니다."
     },
     {
         "id": "保存先パスが不正です",

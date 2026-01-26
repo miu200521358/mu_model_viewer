@@ -105,7 +105,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		if pmxSaveButton == nil || pmxSaveButton.PushButton == nil {
 			return
 		}
-		pmxSaveButton.SetEnabled(isXPath(lastModelPath))
+		pmxSaveButton.SetEnabled(isPmxConvertiblePath(lastModelPath))
 	}
 
 	pmxLoadPicker := widget.NewPmxXLoadFilePicker(
@@ -308,18 +308,18 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 	cw.SetMotion(windowIndex, modelIndex, motionData)
 }
 
-// saveModelAsPmx はXモデルをPMX形式で保存する。
+// saveModelAsPmx はXまたはPMDモデルをPMX形式で保存する。
 func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
-	if !isXPath(modelPath) {
-		logSaveFailed(logger, translator, errors.New(translate(translator, "Xファイルが読み込まれていません")))
+	if !isPmxConvertiblePath(modelPath) {
+		logSaveFailed(logger, translator, errors.New(translate(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	modelData := cw.Model(windowIndex, modelIndex)
 	if modelData == nil {
-		logSaveFailed(logger, translator, errors.New(translate(translator, "Xファイルが読み込まれていません")))
+		logSaveFailed(logger, translator, errors.New(translate(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	outputPath := buildPmxOutputPath(modelPath)
@@ -367,15 +367,16 @@ func logErrorTitle(logger logging.ILogger, title string, err error) {
 	logger.Error("%s: %s", title, err.Error())
 }
 
-// isXPath はXファイルか判定する。
-func isXPath(path string) bool {
+// isPmxConvertiblePath はPMX保存対象のパスか判定する。
+func isPmxConvertiblePath(path string) bool {
 	if path == "" {
 		return false
 	}
-	return strings.EqualFold(filepath.Ext(path), ".x")
+	ext := filepath.Ext(path)
+	return strings.EqualFold(ext, ".x") || strings.EqualFold(ext, ".pmd")
 }
 
-// buildPmxOutputPath はXファイルと同じ場所にPMX出力パスを生成する。
+// buildPmxOutputPath はX/PMDファイルと同じ場所にPMX出力パスを生成する。
 func buildPmxOutputPath(path string) string {
 	dir, name, _ := mfile.SplitPath(path)
 	if dir == "" || name == "" {
