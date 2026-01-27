@@ -4,7 +4,6 @@
 package ui
 
 import (
-	"errors"
 	"path/filepath"
 	"strings"
 
@@ -20,6 +19,7 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/shared/base/config"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/i18n"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
+	"github.com/miu200521358/mlib_go/pkg/shared/base/merr"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 )
@@ -29,8 +29,14 @@ type overrideBoneInserter interface {
 	InsertShortageOverrideBones() error
 }
 
+const (
+	repositoryNotConfiguredErrorID = "95504"
+	modelNotLoadedErrorID          = "95505"
+	savePathInvalidErrorID         = "95506"
+)
+
 // NewTabPages は mu_model_viewer のタブページ群を生成する。
-func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string) []declarative.TabPage {
+func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer) []declarative.TabPage {
 	var fileTab *walk.TabPage
 
 	var translator i18n.II18n
@@ -48,7 +54,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	}
 
 	player := widget.NewMotionPlayer(translator)
-	player.SetAudioPlayer(audio_api.NewAudioPlayer(), userConfig)
+	player.SetAudioPlayer(audioPlayer, userConfig)
 
 	materialView := widget.NewMaterialTableView(
 		translator,
@@ -187,8 +193,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 }
 
 // NewTabPage は単一タブページを生成する。
-func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string) declarative.TabPage {
-	return NewTabPages(mWidgets, baseServices, initialModelPath)[0]
+func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer) declarative.TabPage {
+	return NewTabPages(mWidgets, baseServices, initialModelPath, audioPlayer)[0]
 }
 
 // loadModel はモデル読み込み結果をControlWindowへ反映する。
@@ -204,7 +210,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		return nil
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, errors.New(translate(translator, "モデル読み込みリポジトリがありません")))
+		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(translate(translator, "モデル読み込みリポジトリがありません")))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -222,7 +228,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 	}
 	modelData, ok := data.(*model.PmxModel)
 	if !ok {
-		logLoadFailed(logger, translator, errors.New(translate(translator, "モデル形式が不正です")))
+		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(translate(translator, "モデル形式が不正です"), nil))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -286,7 +292,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 		return
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, errors.New(translate(translator, "モーション読み込みリポジトリがありません")))
+		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(translate(translator, "モーション読み込みリポジトリがありません")))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
@@ -298,7 +304,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 	}
 	motionData, ok := data.(*motion.VmdMotion)
 	if !ok {
-		logLoadFailed(logger, translator, errors.New(translate(translator, "モーション形式が不正です")))
+		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(translate(translator, "モーション形式が不正です"), nil))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
@@ -314,17 +320,17 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 		return
 	}
 	if !isPmxConvertiblePath(modelPath) {
-		logSaveFailed(logger, translator, errors.New(translate(translator, "XまたはPMDファイルが読み込まれていません")))
+		logSaveFailed(logger, translator, newModelNotLoadedError(translate(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	modelData := cw.Model(windowIndex, modelIndex)
 	if modelData == nil {
-		logSaveFailed(logger, translator, errors.New(translate(translator, "XまたはPMDファイルが読み込まれていません")))
+		logSaveFailed(logger, translator, newModelNotLoadedError(translate(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	outputPath := buildPmxOutputPath(modelPath)
 	if outputPath == "" || !mfile.CanSave(outputPath) {
-		logSaveFailed(logger, translator, errors.New(translate(translator, "保存先パスが不正です")))
+		logSaveFailed(logger, translator, newSavePathInvalidError(translate(translator, "保存先パスが不正です")))
 		return
 	}
 	if err := io_model.NewModelRepository().Save(outputPath, modelData, io_common.SaveOptions{}); err != nil {
@@ -335,6 +341,21 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 		logger = logging.DefaultLogger()
 	}
 	logger.Info(translate(translator, "PMX保存完了"), filepath.Base(outputPath))
+}
+
+// newRepositoryNotConfiguredError はリポジトリ未設定エラーを生成する。
+func newRepositoryNotConfiguredError(message string) error {
+	return merr.NewCommonError(repositoryNotConfiguredErrorID, merr.ErrorKindInternal, message, nil)
+}
+
+// newModelNotLoadedError はモデル未読込エラーを生成する。
+func newModelNotLoadedError(message string) error {
+	return merr.NewCommonError(modelNotLoadedErrorID, merr.ErrorKindValidate, message, nil)
+}
+
+// newSavePathInvalidError は保存先パス不正エラーを生成する。
+func newSavePathInvalidError(message string) error {
+	return merr.NewCommonError(savePathInvalidErrorID, merr.ErrorKindValidate, message, nil)
 }
 
 // logLoadFailed は読み込み失敗ログを出力する。
