@@ -17,15 +17,11 @@ import (
 	"github.com/miu200521358/mu_model_viewer/pkg/ui"
 
 	"github.com/miu200521358/mlib_go/pkg/infra/app"
-	"github.com/miu200521358/mlib_go/pkg/infra/base/config"
 	"github.com/miu200521358/mlib_go/pkg/infra/base/err"
 	"github.com/miu200521358/mlib_go/pkg/infra/base/i18n"
-	"github.com/miu200521358/mlib_go/pkg/infra/base/mlogging"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller"
 	"github.com/miu200521358/mlib_go/pkg/infra/drivers/maudio"
 	"github.com/miu200521358/mlib_go/pkg/infra/viewer"
-	"github.com/miu200521358/mlib_go/pkg/shared/base"
-	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
 	"github.com/miu200521358/mlib_go/pkg/shared/state"
 )
 
@@ -49,38 +45,20 @@ func main() {
 	viewerCount := 1
 	initialModelPath := findInitialModelPath(os.Args)
 
-	appConfig, loadErr := config.LoadAppConfig(appFiles)
-	if loadErr != nil {
-		err.ShowFatalErrorDialog(nil, loadErr)
-		return
-	}
-	userConfig := config.NewUserConfigStore()
-	if initErr := i18n.InitI18n(appI18nFiles, userConfig); initErr != nil {
-		err.ShowFatalErrorDialog(appConfig, initErr)
-		return
-	}
-	logger := mlogging.NewLogger(i18n.Default())
-	mlogging.SetDefaultLogger(logger)
-	logging.SetDefaultLogger(logger)
-	configStore := config.NewConfigStore(appConfig, userConfig)
-	baseServices := &base.BaseServices{
-		ConfigStore:   configStore,
-		I18nService:   i18n.Default(),
-		LoggerService: logger,
-	}
-	audioPlayer := maudio.NewAudioPlayer()
-
-	iconImage, iconErr := config.LoadAppIconImage(appFiles, appConfig)
-	if iconErr != nil {
-		logger.Error("アプリアイコンの読込に失敗しました: %s", iconErr.Error())
-	}
-	var appIcon *walk.Icon
-	if iconImage != nil {
-		appIcon, iconErr = walk.NewIconFromImageForDPI(iconImage, 96)
-		if iconErr != nil {
-			logger.Error("アプリアイコンの生成に失敗しました: %s", iconErr.Error())
+	boot, initErr := app.Init(appFiles, appI18nFiles, nil)
+	if initErr != nil {
+		if boot != nil {
+			err.ShowFatalErrorDialog(boot.AppConfig, initErr)
+		} else {
+			err.ShowFatalErrorDialog(nil, initErr)
 		}
+		return
 	}
+	appConfig := boot.AppConfig
+	baseServices := boot.BaseServices
+	iconImage := boot.IconImage
+	appIcon := boot.AppIcon
+	audioPlayer := maudio.NewAudioPlayer()
 
 	sharedState := state.NewSharedState(viewerCount)
 	if sharedState == nil {
