@@ -139,7 +139,7 @@ func findInitialModelPath(args []string) string {
 		}
 		ext := strings.ToLower(filepath.Ext(path))
 		switch ext {
-		case ".pmx", ".x":
+		case ".pmx", ".pmd", ".x":
 			return path
 		}
 	}

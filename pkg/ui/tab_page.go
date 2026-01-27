@@ -114,7 +114,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		pmxSaveButton.SetEnabled(isPmxConvertiblePath(lastModelPath))
 	}
 
-	pmxLoadPicker := widget.NewPmxXLoadFilePicker(
+	pmxLoadPicker := widget.NewPmxPmdXLoadFilePicker(
 		userConfig,
 		translator,
 		"pmx",
