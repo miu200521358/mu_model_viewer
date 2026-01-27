@@ -5,11 +5,11 @@ package ui
 
 import (
 	"path/filepath"
-	"strings"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_model"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
+	"github.com/miu200521358/mlib_go/pkg/domain/motion"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller/widget"
 	"github.com/miu200521358/mlib_go/pkg/infra/file/mfile"
@@ -17,16 +17,10 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/shared/base/config"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/i18n"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
-	"github.com/miu200521358/mlib_go/pkg/shared/base/merr"
 	"github.com/miu200521358/mlib_go/pkg/usecase"
 	portio "github.com/miu200521358/mlib_go/pkg/usecase/port/io"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
-)
-
-const (
-	modelNotLoadedErrorID  = "95505"
-	savePathInvalidErrorID = "95506"
 )
 
 // NewTabPages は mu_model_viewer のタブページ群を生成する。
@@ -105,7 +99,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		if pmxSaveButton == nil || pmxSaveButton.PushButton == nil {
 			return
 		}
-		pmxSaveButton.SetEnabled(isPmxConvertiblePath(lastModelPath))
+		pmxSaveButton.SetEnabled(usecase.IsPmxConvertiblePath(lastModelPath))
 	}
 
 	pmxLoadPicker := widget.NewPmxPmdXLoadFilePicker(
@@ -203,7 +197,11 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		cw.SetModel(windowIndex, modelIndex, nil)
 		return nil
 	}
-	modelData, err := usecase.LoadModel(rep, path)
+	var validator portio.ITextureValidator
+	if materialView != nil {
+		validator = mfile.NewTextureValidator()
+	}
+	result, err := usecase.LoadModelWithValidation(rep, path, validator)
 	if err != nil {
 		logLoadFailed(logger, translator, err)
 		if materialView != nil {
@@ -212,8 +210,20 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		cw.SetModel(windowIndex, modelIndex, nil)
 		return nil
 	}
+	modelData := (*model.PmxModel)(nil)
+	validation := (*usecase.TextureValidationResult)(nil)
+	if result != nil {
+		modelData = result.Model
+		validation = result.Validation
+	}
+	if modelData == nil {
+		if materialView != nil {
+			materialView.ResetRows(nil)
+		}
+		cw.SetModel(windowIndex, modelIndex, nil)
+		return nil
+	}
 	if materialView != nil {
-		validation := usecase.ValidateModelTextures(modelData, mfile.NewTextureValidator())
 		logTextureValidationErrors(logger, validation)
 		materialView.ResetRows(modelData)
 	}
@@ -230,14 +240,24 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
-	motionData, err := usecase.LoadMotion(rep, path)
+	motionResult, err := usecase.LoadMotionWithMeta(rep, path)
 	if err != nil {
 		logLoadFailed(logger, translator, err)
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
+	motionData := (*motion.VmdMotion)(nil)
+	maxFrame := motion.Frame(0)
+	if motionResult != nil {
+		motionData = motionResult.Motion
+		maxFrame = motionResult.MaxFrame
+	}
+	if motionData == nil {
+		cw.SetMotion(windowIndex, modelIndex, nil)
+		return
+	}
 	if player != nil {
-		player.Reset(motionData.MaxFrame())
+		player.Reset(maxFrame)
 	}
 	cw.SetMotion(windowIndex, modelIndex, motionData)
 }
@@ -247,39 +267,29 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 	if cw == nil {
 		return
 	}
-	if !isPmxConvertiblePath(modelPath) {
-		logSaveFailed(logger, translator, newModelNotLoadedError(i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません")))
-		return
-	}
 	modelData := cw.Model(windowIndex, modelIndex)
-	if modelData == nil {
-		logSaveFailed(logger, translator, newModelNotLoadedError(i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません")))
-		return
-	}
-	outputPath := buildPmxOutputPath(modelPath)
-	if outputPath == "" || !mfile.CanSave(outputPath) {
-		logSaveFailed(logger, translator, newSavePathInvalidError(i18n.TranslateOrMark(translator, "保存先パスが不正です")))
-		return
-	}
-	if err := io_model.NewModelRepository().Save(outputPath, modelData, portio.SaveOptions{}); err != nil {
+	result, err := usecase.SaveModelAsPmx(usecase.PmxSaveRequest{
+		ModelPath:              modelPath,
+		ModelData:              modelData,
+		Writer:                 io_model.NewModelRepository(),
+		PathService:            mfile.NewPathService(),
+		MissingModelMessage:    i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません"),
+		InvalidSavePathMessage: i18n.TranslateOrMark(translator, "保存先パスが不正です"),
+		SaveOptions:            portio.SaveOptions{},
+	})
+	if err != nil {
 		logSaveFailed(logger, translator, err)
+		return
+	}
+	if result == nil || result.OutputPath == "" {
+		logSaveFailed(logger, translator, nil)
 		return
 	}
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
 	controller.Beep()
-	logger.Info("PMX保存完了", filepath.Base(outputPath))
-}
-
-// newModelNotLoadedError はモデル未読込エラーを生成する。
-func newModelNotLoadedError(message string) error {
-	return merr.NewCommonError(modelNotLoadedErrorID, merr.ErrorKindValidate, message, nil)
-}
-
-// newSavePathInvalidError は保存先パス不正エラーを生成する。
-func newSavePathInvalidError(message string) error {
-	return merr.NewCommonError(savePathInvalidErrorID, merr.ErrorKindValidate, message, nil)
+	logger.Info("PMX保存完了", filepath.Base(result.OutputPath))
 }
 
 // logLoadFailed は読み込み失敗ログを出力する。
@@ -326,22 +336,4 @@ func logErrorTitle(logger logging.ILogger, title string, err error) {
 		return
 	}
 	logger.Error("%s: %s", title, err.Error())
-}
-
-// isPmxConvertiblePath はPMX保存対象のパスか判定する。
-func isPmxConvertiblePath(path string) bool {
-	if path == "" {
-		return false
-	}
-	ext := filepath.Ext(path)
-	return strings.EqualFold(ext, ".x") || strings.EqualFold(ext, ".pmd")
-}
-
-// buildPmxOutputPath はX/PMDファイルと同じ場所にPMX出力パスを生成する。
-func buildPmxOutputPath(path string) string {
-	dir, name, _ := mfile.SplitPath(path)
-	if dir == "" || name == "" {
-		return ""
-	}
-	return mfile.CreateOutputPath(filepath.Join(dir, name+".pmx"), "")
 }
