@@ -340,7 +340,7 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logger.Info(translate(translator, "PMX保存完了"), filepath.Base(outputPath))
+	logger.Info("PMX保存完了", filepath.Base(outputPath))
 }
 
 // newRepositoryNotConfiguredError はリポジトリ未設定エラーを生成する。

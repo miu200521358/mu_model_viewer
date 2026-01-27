@@ -72,13 +72,13 @@ func main() {
 
 	iconImage, iconErr := config.LoadAppIconImage(appFiles, appConfig)
 	if iconErr != nil {
-		logger.Error(i18n.T("アプリアイコンの読込に失敗しました: %s"), iconErr.Error())
+		logger.Error("アプリアイコンの読込に失敗しました: %s", iconErr.Error())
 	}
 	var appIcon *walk.Icon
 	if iconImage != nil {
 		appIcon, iconErr = walk.NewIconFromImageForDPI(iconImage, 96)
 		if iconErr != nil {
-			logger.Error(i18n.T("アプリアイコンの生成に失敗しました: %s"), iconErr.Error())
+			logger.Error("アプリアイコンの生成に失敗しました: %s", iconErr.Error())
 		}
 	}
 
