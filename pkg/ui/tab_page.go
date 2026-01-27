@@ -24,8 +24,8 @@ import (
 	"github.com/miu200521358/walk/pkg/walk"
 )
 
-// overrideBoneInserter は不足ボーンの補完を行うI/F。
-type overrideBoneInserter interface {
+// iOverrideBoneInserter は不足ボーンの補完を行うI/F。
+type iOverrideBoneInserter interface {
 	InsertShortageOverrideBones() error
 }
 
@@ -236,7 +236,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		return nil
 	}
 	if modelData.Bones != nil {
-		if inserter, ok := any(modelData.Bones).(overrideBoneInserter); ok {
+		if inserter, ok := any(modelData.Bones).(iOverrideBoneInserter); ok {
 			// システム用ボーンの追加に失敗しても何もメッセージは出さない
 			inserter.InsertShortageOverrideBones()
 		}
@@ -340,6 +340,7 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
+	controller.Beep()
 	logger.Info("PMX保存完了", filepath.Base(outputPath))
 }
 
