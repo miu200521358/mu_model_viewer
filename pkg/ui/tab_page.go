@@ -58,7 +58,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 
 	materialView := widget.NewMaterialTableView(
 		translator,
-		translate(translator, "材質ビュー説明"),
+		i18n.TranslateOrMark(translator, "材質ビュー説明"),
 		func(cw *controller.ControlWindow, indexes []int) {
 			if cw == nil {
 				return
@@ -68,8 +68,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	)
 
 	allMaterialButton := widget.NewMPushButton()
-	allMaterialButton.SetLabel(translate(translator, "全"))
-	allMaterialButton.SetTooltip(translate(translator, "全ボタン説明"))
+	allMaterialButton.SetLabel(i18n.TranslateOrMark(translator, "全"))
+	allMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, "全ボタン説明"))
 	allMaterialButton.SetMaxSize(declarative.Size{Width: 50})
 	allMaterialButton.SetMinSize(declarative.Size{Width: 30})
 	allMaterialButton.SetOnClicked(func(cw *controller.ControlWindow) {
@@ -80,8 +80,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	})
 
 	invertMaterialButton := widget.NewMPushButton()
-	invertMaterialButton.SetLabel(translate(translator, "反"))
-	invertMaterialButton.SetTooltip(translate(translator, "反ボタン説明"))
+	invertMaterialButton.SetLabel(i18n.TranslateOrMark(translator, "反"))
+	invertMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, "反ボタン説明"))
 	invertMaterialButton.SetMaxSize(declarative.Size{Width: 50})
 	invertMaterialButton.SetMinSize(declarative.Size{Width: 30})
 	invertMaterialButton.SetOnClicked(func(cw *controller.ControlWindow) {
@@ -94,8 +94,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	var lastModelPath string
 
 	pmxSaveButton := widget.NewMPushButton()
-	pmxSaveButton.SetLabel(translate(translator, "PMX保存"))
-	pmxSaveButton.SetTooltip(translate(translator, "PMX保存説明"))
+	pmxSaveButton.SetLabel(i18n.TranslateOrMark(translator, "PMX保存"))
+	pmxSaveButton.SetTooltip(i18n.TranslateOrMark(translator, "PMX保存説明"))
 	pmxSaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
 		saveModelAsPmx(logger, translator, cw, lastModelPath, 0, 0)
 	})
@@ -117,9 +117,9 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	pmxLoadPicker := widget.NewPmxPmdXLoadFilePicker(
 		userConfig,
 		translator,
-		"pmx",
-		translate(translator, "モデルファイル"),
-		translate(translator, "モデルファイルを選択してください"),
+		config.UserConfigKeyPmxHistory,
+		i18n.TranslateOrMark(translator, "モデルファイル"),
+		i18n.TranslateOrMark(translator, "モデルファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
 			modelData := loadModel(logger, translator, cw, rep, path, materialView, 0, 0)
 			updatePmxSaveState(modelData, path)
@@ -129,9 +129,9 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	vmdLoadPicker := widget.NewVmdVpdLoadFilePicker(
 		userConfig,
 		translator,
-		"vmd",
-		translate(translator, "モーションファイル"),
-		translate(translator, "モーションファイルを選択してください"),
+		config.UserConfigKeyVmdHistory,
+		i18n.TranslateOrMark(translator, "モーションファイル"),
+		i18n.TranslateOrMark(translator, "モーションファイルを選択してください"),
 		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
 			loadMotion(logger, translator, cw, rep, player, path, 0, 0)
 		},
@@ -157,7 +157,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	})
 
 	fileTabPage := declarative.TabPage{
-		Title:    translate(translator, "ファイル"),
+		Title:    i18n.TranslateOrMark(translator, "ファイル"),
 		AssignTo: &fileTab,
 		Layout:   declarative.VBox{},
 		Background: declarative.SolidColorBrush{
@@ -173,7 +173,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 					declarative.Composite{
 						Layout: declarative.HBox{},
 						Children: []declarative.Widget{
-							declarative.TextLabel{Text: translate(translator, "材質ビュー")},
+							declarative.TextLabel{Text: i18n.TranslateOrMark(translator, "材質ビュー")},
 							declarative.HSpacer{},
 							allMaterialButton.Widgets(),
 							invertMaterialButton.Widgets(),
@@ -210,7 +210,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		return nil
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(translate(translator, "モデル読み込みリポジトリがありません")))
+		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(i18n.TranslateOrMark(translator, "モデル読み込みリポジトリがありません")))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -228,7 +228,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 	}
 	modelData, ok := data.(*model.PmxModel)
 	if !ok {
-		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(translate(translator, "モデル形式が不正です"), nil))
+		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(i18n.TranslateOrMark(translator, "モデル形式が不正です"), nil))
 		if materialView != nil {
 			materialView.ResetRows(nil)
 		}
@@ -292,7 +292,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 		return
 	}
 	if rep == nil {
-		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(translate(translator, "モーション読み込みリポジトリがありません")))
+		logLoadFailed(logger, translator, newRepositoryNotConfiguredError(i18n.TranslateOrMark(translator, "モーション読み込みリポジトリがありません")))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
@@ -304,7 +304,7 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 	}
 	motionData, ok := data.(*motion.VmdMotion)
 	if !ok {
-		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(translate(translator, "モーション形式が不正です"), nil))
+		logLoadFailed(logger, translator, io_common.NewIoFormatNotSupported(i18n.TranslateOrMark(translator, "モーション形式が不正です"), nil))
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
@@ -320,17 +320,17 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 		return
 	}
 	if !isPmxConvertiblePath(modelPath) {
-		logSaveFailed(logger, translator, newModelNotLoadedError(translate(translator, "XまたはPMDファイルが読み込まれていません")))
+		logSaveFailed(logger, translator, newModelNotLoadedError(i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	modelData := cw.Model(windowIndex, modelIndex)
 	if modelData == nil {
-		logSaveFailed(logger, translator, newModelNotLoadedError(translate(translator, "XまたはPMDファイルが読み込まれていません")))
+		logSaveFailed(logger, translator, newModelNotLoadedError(i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません")))
 		return
 	}
 	outputPath := buildPmxOutputPath(modelPath)
 	if outputPath == "" || !mfile.CanSave(outputPath) {
-		logSaveFailed(logger, translator, newSavePathInvalidError(translate(translator, "保存先パスが不正です")))
+		logSaveFailed(logger, translator, newSavePathInvalidError(i18n.TranslateOrMark(translator, "保存先パスが不正です")))
 		return
 	}
 	if err := io_model.NewModelRepository().Save(outputPath, modelData, io_common.SaveOptions{}); err != nil {
@@ -364,7 +364,7 @@ func logLoadFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logErrorTitle(logger, translate(translator, "読み込み失敗"), err)
+	logErrorTitle(logger, i18n.TranslateOrMark(translator, "読み込み失敗"), err)
 }
 
 // logSaveFailed は保存失敗ログを出力する。
@@ -372,7 +372,7 @@ func logSaveFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logErrorTitle(logger, translate(translator, "保存失敗"), err)
+	logErrorTitle(logger, i18n.TranslateOrMark(translator, "保存失敗"), err)
 }
 
 // logErrorTitle はタイトル付きエラーを出力する。
@@ -405,12 +405,4 @@ func buildPmxOutputPath(path string) string {
 		return ""
 	}
 	return mfile.CreateOutputPath(filepath.Join(dir, name+".pmx"), "")
-}
-
-// translate は翻訳済み文言を返す。
-func translate(translator i18n.II18n, key string) string {
-	if translator == nil || !translator.IsReady() {
-		return "●●" + key + "●●"
-	}
-	return translator.T(key)
 }
