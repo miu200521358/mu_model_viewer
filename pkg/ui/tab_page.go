@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
-	"github.com/miu200521358/mlib_go/pkg/adapter/io_common"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_model"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller"
@@ -20,6 +19,7 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/merr"
 	"github.com/miu200521358/mlib_go/pkg/usecase"
+	portio "github.com/miu200521358/mlib_go/pkg/usecase/port/io"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 )
@@ -114,7 +114,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		config.UserConfigKeyPmxHistory,
 		i18n.TranslateOrMark(translator, "モデルファイル"),
 		i18n.TranslateOrMark(translator, "モデルファイルを選択してください"),
-		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
+		func(cw *controller.ControlWindow, rep portio.IFileReader, path string) {
 			modelData := loadModel(logger, translator, cw, rep, path, materialView, 0, 0)
 			updatePmxSaveState(modelData, path)
 		},
@@ -126,7 +126,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		config.UserConfigKeyVmdHistory,
 		i18n.TranslateOrMark(translator, "モーションファイル"),
 		i18n.TranslateOrMark(translator, "モーションファイルを選択してください"),
-		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
+		func(cw *controller.ControlWindow, rep portio.IFileReader, path string) {
 			loadMotion(logger, translator, cw, rep, player, path, 0, 0)
 		},
 	)
@@ -192,7 +192,7 @@ func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, 
 }
 
 // loadModel はモデル読み込み結果をControlWindowへ反映する。
-func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
+func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep portio.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
 	if cw == nil {
 		return nil
 	}
@@ -213,48 +213,16 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		return nil
 	}
 	if materialView != nil {
-		validateModelTextures(modelData)
+		validation := usecase.ValidateModelTextures(modelData, mfile.NewTextureValidator())
+		logTextureValidationErrors(logger, validation)
 		materialView.ResetRows(modelData)
 	}
 	cw.SetModel(windowIndex, modelIndex, modelData)
 	return modelData
 }
 
-// validateModelTextures はモデルのテクスチャ有効性を検証する。
-func validateModelTextures(modelData *model.PmxModel) {
-	if modelData == nil || modelData.Textures == nil {
-		return
-	}
-
-	baseDir := filepath.Dir(modelData.Path())
-	for _, texture := range modelData.Textures.Values() {
-		if texture == nil {
-			continue
-		}
-		name := texture.Name()
-		if name == "" {
-			texture.SetValid(false)
-			continue
-		}
-		texturePath := name
-		if !filepath.IsAbs(texturePath) {
-			texturePath = filepath.Join(baseDir, texturePath)
-		}
-		exists, err := mfile.ExistsFile(texturePath)
-		if err != nil || !exists {
-			texture.SetValid(false)
-			continue
-		}
-		if _, err := mfile.LoadImage(texturePath); err != nil {
-			texture.SetValid(false)
-			continue
-		}
-		texture.SetValid(true)
-	}
-}
-
 // loadMotion はモーション読み込み結果をControlWindowへ反映する。
-func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
+func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep portio.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
@@ -293,7 +261,7 @@ func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controlle
 		logSaveFailed(logger, translator, newSavePathInvalidError(i18n.TranslateOrMark(translator, "保存先パスが不正です")))
 		return
 	}
-	if err := io_model.NewModelRepository().Save(outputPath, modelData, io_common.SaveOptions{}); err != nil {
+	if err := io_model.NewModelRepository().Save(outputPath, modelData, portio.SaveOptions{}); err != nil {
 		logSaveFailed(logger, translator, err)
 		return
 	}
@@ -328,6 +296,22 @@ func logSaveFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 		logger = logging.DefaultLogger()
 	}
 	logErrorTitle(logger, i18n.TranslateOrMark(translator, "保存失敗"), err)
+}
+
+// logTextureValidationErrors はテクスチャ検証エラーをログ出力する。
+func logTextureValidationErrors(logger logging.ILogger, result *usecase.TextureValidationResult) {
+	if logger == nil || result == nil {
+		return
+	}
+	if len(result.Errors) == 0 {
+		return
+	}
+	for _, err := range result.Errors {
+		if err == nil {
+			continue
+		}
+		logger.Warn("テクスチャ検証でエラーが発生しました: %s", err.Error())
+	}
 }
 
 // logErrorTitle はタイトル付きエラーを出力する。
