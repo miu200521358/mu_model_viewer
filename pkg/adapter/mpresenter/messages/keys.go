@@ -4,7 +4,9 @@ package messages
 
 // メッセージキー一覧。
 const (
+	HelpUsageTitle         = "使い方"
 	HelpUsage              = "使い方説明"
+	HelpMaterialViewTitle  = "材質ビュー"
 	HelpMaterialView       = "材質ビュー説明"
 	LabelAll               = "全"
 	LabelAllTip            = "全ボタン説明"

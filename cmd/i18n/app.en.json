@@ -8,6 +8,10 @@
         "translation": "If you associate the tool with the pmx or x file extension, you can launch the viewer by double-clicking the file.\nYou can also apply motions and toggle material display."
     },
     {
+        "id": "使い方",
+        "translation": "Usage"
+    },
+    {
         "id": "ビューワー",
         "translation": "Viewer"
     },
