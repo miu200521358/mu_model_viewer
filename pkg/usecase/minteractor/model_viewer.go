@@ -1,10 +1,10 @@
 // 指示: miu200521358
-package usecase
+package minteractor
 
 import (
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
 	commonusecase "github.com/miu200521358/mlib_go/pkg/usecase"
-	portio "github.com/miu200521358/mu_model_viewer/pkg/usecase/port/io"
+	"github.com/miu200521358/mu_model_viewer/pkg/usecase/port/moutput"
 )
 
 // ModelLoadResult はモデル読み込み結果を表す。
@@ -20,24 +20,24 @@ type TextureValidationResult = commonusecase.TextureValidationResult
 type PmxSaveResult = commonusecase.PmxSaveResult
 
 // SaveOptions は保存時のオプションを表す。
-type SaveOptions = portio.SaveOptions
+type SaveOptions = moutput.SaveOptions
 
 // ModelViewerUsecaseDeps はモデルビューア用ユースケースの依存を表す。
 type ModelViewerUsecaseDeps struct {
-	ModelReader      portio.IFileReader
-	MotionReader     portio.IFileReader
-	ModelWriter      portio.IFileWriter
-	TextureValidator portio.ITextureValidator
-	PathService      portio.IPathService
+	ModelReader      moutput.IFileReader
+	MotionReader     moutput.IFileReader
+	ModelWriter      moutput.IFileWriter
+	TextureValidator moutput.ITextureValidator
+	PathService      moutput.IPathService
 }
 
 // ModelViewerUsecase はモデルビューアの入出力処理をまとめたユースケースを表す。
 type ModelViewerUsecase struct {
-	modelReader      portio.IFileReader
-	motionReader     portio.IFileReader
-	modelWriter      portio.IFileWriter
-	textureValidator portio.ITextureValidator
-	pathService      portio.IPathService
+	modelReader      moutput.IFileReader
+	motionReader     moutput.IFileReader
+	modelWriter      moutput.IFileWriter
+	textureValidator moutput.ITextureValidator
+	pathService      moutput.IPathService
 }
 
 // NewModelViewerUsecase はモデルビューア用ユースケースを生成する。
@@ -52,7 +52,7 @@ func NewModelViewerUsecase(deps ModelViewerUsecaseDeps) *ModelViewerUsecase {
 }
 
 // LoadModel はモデルを読み込み、テクスチャ検証結果を付与して返す。
-func (uc *ModelViewerUsecase) LoadModel(rep portio.IFileReader, path string) (*ModelLoadResult, error) {
+func (uc *ModelViewerUsecase) LoadModel(rep moutput.IFileReader, path string) (*ModelLoadResult, error) {
 	repo := rep
 	if repo == nil {
 		repo = uc.modelReader
@@ -69,7 +69,7 @@ func (uc *ModelViewerUsecase) LoadModel(rep portio.IFileReader, path string) (*M
 }
 
 // LoadMotion はモーションを読み込み、最大フレーム情報を返す。
-func (uc *ModelViewerUsecase) LoadMotion(rep portio.IFileReader, path string) (*MotionLoadResult, error) {
+func (uc *ModelViewerUsecase) LoadMotion(rep moutput.IFileReader, path string) (*MotionLoadResult, error) {
 	repo := rep
 	if repo == nil {
 		repo = uc.motionReader
@@ -83,7 +83,7 @@ type SaveModelAsPmxRequest struct {
 	ModelData              *model.PmxModel
 	MissingModelMessage    string
 	InvalidSavePathMessage string
-	SaveOptions            portio.SaveOptions
+	SaveOptions            moutput.SaveOptions
 }
 
 // SaveModelAsPmx はX/PMDモデルをPMX形式で保存する。
@@ -105,7 +105,7 @@ func (uc *ModelViewerUsecase) IsPmxConvertiblePath(path string) bool {
 }
 
 // CanLoadPath はリポジトリが指定パスを読み込み可能か判定する。
-func (uc *ModelViewerUsecase) CanLoadPath(rep portio.IFileReader, path string) bool {
+func (uc *ModelViewerUsecase) CanLoadPath(rep moutput.IFileReader, path string) bool {
 	repo := rep
 	if repo == nil {
 		repo = uc.modelReader

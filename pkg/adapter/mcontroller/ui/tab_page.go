@@ -20,11 +20,12 @@ import (
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 
-	"github.com/miu200521358/mu_model_viewer/pkg/usecase"
+	"github.com/miu200521358/mu_model_viewer/pkg/adapter/mpresenter/messages"
+	"github.com/miu200521358/mu_model_viewer/pkg/usecase/minteractor"
 )
 
 // NewTabPages は mu_model_viewer のタブページ群を生成する。
-func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *usecase.ModelViewerUsecase) []declarative.TabPage {
+func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *minteractor.ModelViewerUsecase) []declarative.TabPage {
 	var fileTab *walk.TabPage
 
 	var translator i18n.II18n
@@ -42,7 +43,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	}
 	if viewerUsecase == nil {
 		// ユースケース未設定時は依存不足の可能性があるため、空の依存で生成する。
-		viewerUsecase = usecase.NewModelViewerUsecase(usecase.ModelViewerUsecaseDeps{})
+		viewerUsecase = minteractor.NewModelViewerUsecase(minteractor.ModelViewerUsecaseDeps{})
 	}
 
 	player := widget.NewMotionPlayer(translator)
@@ -50,7 +51,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 
 	materialView := widget.NewMaterialTableView(
 		translator,
-		i18n.TranslateOrMark(translator, "材質ビュー説明"),
+		i18n.TranslateOrMark(translator, messages.HelpMaterialView),
 		func(cw *controller.ControlWindow, indexes []int) {
 			if cw == nil {
 				return
@@ -60,8 +61,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	)
 
 	allMaterialButton := widget.NewMPushButton()
-	allMaterialButton.SetLabel(i18n.TranslateOrMark(translator, "全"))
-	allMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, "全ボタン説明"))
+	allMaterialButton.SetLabel(i18n.TranslateOrMark(translator, messages.LabelAll))
+	allMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, messages.LabelAllTip))
 	allMaterialButton.SetMaxSize(declarative.Size{Width: 50})
 	allMaterialButton.SetMinSize(declarative.Size{Width: 30})
 	allMaterialButton.SetOnClicked(func(cw *controller.ControlWindow) {
@@ -72,8 +73,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	})
 
 	invertMaterialButton := widget.NewMPushButton()
-	invertMaterialButton.SetLabel(i18n.TranslateOrMark(translator, "反"))
-	invertMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, "反ボタン説明"))
+	invertMaterialButton.SetLabel(i18n.TranslateOrMark(translator, messages.LabelInvert))
+	invertMaterialButton.SetTooltip(i18n.TranslateOrMark(translator, messages.LabelInvertTip))
 	invertMaterialButton.SetMaxSize(declarative.Size{Width: 50})
 	invertMaterialButton.SetMinSize(declarative.Size{Width: 30})
 	invertMaterialButton.SetOnClicked(func(cw *controller.ControlWindow) {
@@ -86,8 +87,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	var lastModelPath string
 
 	pmxSaveButton := widget.NewMPushButton()
-	pmxSaveButton.SetLabel(i18n.TranslateOrMark(translator, "PMX保存"))
-	pmxSaveButton.SetTooltip(i18n.TranslateOrMark(translator, "PMX保存説明"))
+	pmxSaveButton.SetLabel(i18n.TranslateOrMark(translator, messages.LabelPmxSave))
+	pmxSaveButton.SetTooltip(i18n.TranslateOrMark(translator, messages.LabelPmxSaveTip))
 	pmxSaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
 		saveModelAsPmx(viewerUsecase, logger, translator, cw, lastModelPath, 0, 0)
 	})
@@ -110,8 +111,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		userConfig,
 		translator,
 		config.UserConfigKeyPmxHistory,
-		i18n.TranslateOrMark(translator, "モデルファイル"),
-		i18n.TranslateOrMark(translator, "モデルファイルを選択してください"),
+		i18n.TranslateOrMark(translator, messages.LabelModelFile),
+		i18n.TranslateOrMark(translator, messages.LabelModelFileTip),
 		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
 			modelData := loadModel(viewerUsecase, logger, translator, cw, rep, path, materialView, 0, 0)
 			updatePmxSaveState(modelData, path)
@@ -122,8 +123,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		userConfig,
 		translator,
 		config.UserConfigKeyVmdHistory,
-		i18n.TranslateOrMark(translator, "モーションファイル"),
-		i18n.TranslateOrMark(translator, "モーションファイルを選択してください"),
+		i18n.TranslateOrMark(translator, messages.LabelMotionFile),
+		i18n.TranslateOrMark(translator, messages.LabelMotionFileTip),
 		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
 			loadMotion(viewerUsecase, logger, translator, cw, rep, player, path, 0, 0)
 		},
@@ -149,7 +150,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	})
 
 	fileTabPage := declarative.TabPage{
-		Title:    i18n.TranslateOrMark(translator, "ファイル"),
+		Title:    i18n.TranslateOrMark(translator, messages.LabelFile),
 		AssignTo: &fileTab,
 		Layout:   declarative.VBox{},
 		Background: declarative.SolidColorBrush{
@@ -165,7 +166,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 					declarative.Composite{
 						Layout: declarative.HBox{},
 						Children: []declarative.Widget{
-							declarative.TextLabel{Text: i18n.TranslateOrMark(translator, "材質ビュー")},
+							declarative.TextLabel{Text: i18n.TranslateOrMark(translator, messages.LabelMaterialView)},
 							declarative.HSpacer{},
 							allMaterialButton.Widgets(),
 							invertMaterialButton.Widgets(),
@@ -185,12 +186,12 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 }
 
 // NewTabPage は単一タブページを生成する。
-func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *usecase.ModelViewerUsecase) declarative.TabPage {
+func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *minteractor.ModelViewerUsecase) declarative.TabPage {
 	return NewTabPages(mWidgets, baseServices, initialModelPath, audioPlayer, viewerUsecase)[0]
 }
 
 // loadModel はモデル読み込み結果をControlWindowへ反映する。
-func loadModel(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
+func loadModel(viewerUsecase *minteractor.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
 	if cw == nil {
 		return nil
 	}
@@ -219,7 +220,7 @@ func loadModel(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger
 		return nil
 	}
 	modelData := (*model.PmxModel)(nil)
-	validation := (*usecase.TextureValidationResult)(nil)
+	validation := (*minteractor.TextureValidationResult)(nil)
 	if result != nil {
 		modelData = result.Model
 		validation = result.Validation
@@ -240,7 +241,7 @@ func loadModel(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger
 }
 
 // loadMotion はモーション読み込み結果をControlWindowへ反映する。
-func loadMotion(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
+func loadMotion(viewerUsecase *minteractor.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
@@ -276,7 +277,7 @@ func loadMotion(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogge
 }
 
 // saveModelAsPmx はXまたはPMDモデルをPMX形式で保存する。
-func saveModelAsPmx(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
+func saveModelAsPmx(viewerUsecase *minteractor.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
@@ -285,12 +286,12 @@ func saveModelAsPmx(viewerUsecase *usecase.ModelViewerUsecase, logger logging.IL
 		logSaveFailed(logger, translator, nil)
 		return
 	}
-	result, err := viewerUsecase.SaveModelAsPmx(usecase.SaveModelAsPmxRequest{
+	result, err := viewerUsecase.SaveModelAsPmx(minteractor.SaveModelAsPmxRequest{
 		ModelPath:              modelPath,
 		ModelData:              modelData,
-		MissingModelMessage:    i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません"),
-		InvalidSavePathMessage: i18n.TranslateOrMark(translator, "保存先パスが不正です"),
-		SaveOptions:            usecase.SaveOptions{},
+		MissingModelMessage:    i18n.TranslateOrMark(translator, messages.MessageMissingModel),
+		InvalidSavePathMessage: i18n.TranslateOrMark(translator, messages.MessageSavePathInvalid),
+		SaveOptions:            minteractor.SaveOptions{},
 	})
 	if err != nil {
 		logSaveFailed(logger, translator, err)
@@ -304,7 +305,7 @@ func saveModelAsPmx(viewerUsecase *usecase.ModelViewerUsecase, logger logging.IL
 		logger = logging.DefaultLogger()
 	}
 	controller.Beep()
-	logger.Info("PMX保存完了", filepath.Base(result.OutputPath))
+	logger.Info(i18n.TranslateOrMark(translator, messages.LogPmxSaveSuccess), filepath.Base(result.OutputPath))
 }
 
 // logLoadFailed は読み込み失敗ログを出力する。
@@ -312,7 +313,7 @@ func logLoadFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logErrorTitle(logger, i18n.TranslateOrMark(translator, "読み込み失敗"), err)
+	logErrorTitle(logger, i18n.TranslateOrMark(translator, messages.MessageLoadFailed), err)
 }
 
 // logSaveFailed は保存失敗ログを出力する。
@@ -320,11 +321,11 @@ func logSaveFailed(logger logging.ILogger, translator i18n.II18n, err error) {
 	if logger == nil {
 		logger = logging.DefaultLogger()
 	}
-	logErrorTitle(logger, i18n.TranslateOrMark(translator, "保存失敗"), err)
+	logErrorTitle(logger, i18n.TranslateOrMark(translator, messages.MessageSaveFailed), err)
 }
 
 // logTextureValidationErrors はテクスチャ検証エラーをログ出力する。
-func logTextureValidationErrors(logger logging.ILogger, result *usecase.TextureValidationResult) {
+func logTextureValidationErrors(logger logging.ILogger, result *minteractor.TextureValidationResult) {
 	if logger == nil || result == nil {
 		return
 	}

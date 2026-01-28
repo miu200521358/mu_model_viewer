@@ -8,6 +8,8 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/shared/base/i18n"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
 	"github.com/miu200521358/walk/pkg/declarative"
+
+	"github.com/miu200521358/mu_model_viewer/pkg/adapter/mpresenter/messages"
 )
 
 // NewMenuItems は mu_model_viewer のメニュー項目を生成する。
@@ -23,27 +25,27 @@ func NewMenuItems(translator i18n.II18n, logger logging.ILogger) []declarative.M
 	}
 	return []declarative.MenuItem{
 		declarative.Action{
-			Text: t("使い方説明"),
+			Text: t(messages.HelpUsage),
 			OnTriggered: func() {
 				if lineLogger, ok := logger.(interface {
 					InfoLine(msg string, params ...any)
 				}); ok {
-					lineLogger.InfoLine("使い方説明")
+					lineLogger.InfoLine(messages.HelpUsage)
 					return
 				}
-				logger.Info("使い方説明")
+				logger.Info(messages.HelpUsage)
 			},
 		},
 		declarative.Action{
-			Text: t("材質ビュー説明"),
+			Text: t(messages.HelpMaterialView),
 			OnTriggered: func() {
 				if lineLogger, ok := logger.(interface {
 					InfoLine(msg string, params ...any)
 				}); ok {
-					lineLogger.InfoLine("材質ビュー説明")
+					lineLogger.InfoLine(messages.HelpMaterialView)
 					return
 				}
-				logger.Info("材質ビュー説明")
+				logger.Info(messages.HelpMaterialView)
 			},
 		},
 	}

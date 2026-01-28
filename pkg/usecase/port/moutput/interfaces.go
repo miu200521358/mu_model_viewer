@@ -1,5 +1,5 @@
 // 指示: miu200521358
-package io
+package moutput
 
 import portio "github.com/miu200521358/mlib_go/pkg/usecase/port/io"
 

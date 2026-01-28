@@ -12,8 +12,8 @@ import (
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 
-	"github.com/miu200521358/mu_model_viewer/pkg/adapter/ui"
-	"github.com/miu200521358/mu_model_viewer/pkg/usecase"
+	"github.com/miu200521358/mu_model_viewer/pkg/adapter/mcontroller/ui"
+	"github.com/miu200521358/mu_model_viewer/pkg/usecase/minteractor"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_model"
@@ -51,7 +51,7 @@ func main() {
 			return ui.NewMenuItems(baseServices.I18n(), baseServices.Logger())
 		},
 		BuildTabPages: func(widgets *controller.MWidgets, baseServices base.IBaseServices, audioPlayer audio_api.IAudioPlayer) []declarative.TabPage {
-			viewerUsecase := usecase.NewModelViewerUsecase(usecase.ModelViewerUsecaseDeps{
+			viewerUsecase := minteractor.NewModelViewerUsecase(minteractor.ModelViewerUsecaseDeps{
 				ModelReader:      io_model.NewModelRepository(),
 				MotionReader:     io_motion.NewVmdVpdRepository(),
 				ModelWriter:      io_model.NewModelRepository(),
