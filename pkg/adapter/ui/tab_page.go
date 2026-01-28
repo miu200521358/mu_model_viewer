@@ -1,30 +1,30 @@
 //go:build windows
 // +build windows
 
+// 指示: miu200521358
 package ui
 
 import (
 	"path/filepath"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
-	"github.com/miu200521358/mlib_go/pkg/adapter/io_model"
+	"github.com/miu200521358/mlib_go/pkg/adapter/io_common"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
 	"github.com/miu200521358/mlib_go/pkg/domain/motion"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller"
 	"github.com/miu200521358/mlib_go/pkg/infra/controller/widget"
-	"github.com/miu200521358/mlib_go/pkg/infra/file/mfile"
 	"github.com/miu200521358/mlib_go/pkg/shared/base"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/config"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/i18n"
 	"github.com/miu200521358/mlib_go/pkg/shared/base/logging"
-	"github.com/miu200521358/mlib_go/pkg/usecase"
-	portio "github.com/miu200521358/mlib_go/pkg/usecase/port/io"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
+
+	"github.com/miu200521358/mu_model_viewer/pkg/usecase"
 )
 
 // NewTabPages は mu_model_viewer のタブページ群を生成する。
-func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer) []declarative.TabPage {
+func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *usecase.ModelViewerUsecase) []declarative.TabPage {
 	var fileTab *walk.TabPage
 
 	var translator i18n.II18n
@@ -39,6 +39,10 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	}
 	if logger == nil {
 		logger = logging.DefaultLogger()
+	}
+	if viewerUsecase == nil {
+		// ユースケース未設定時は依存不足の可能性があるため、空の依存で生成する。
+		viewerUsecase = usecase.NewModelViewerUsecase(usecase.ModelViewerUsecaseDeps{})
 	}
 
 	player := widget.NewMotionPlayer(translator)
@@ -85,7 +89,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 	pmxSaveButton.SetLabel(i18n.TranslateOrMark(translator, "PMX保存"))
 	pmxSaveButton.SetTooltip(i18n.TranslateOrMark(translator, "PMX保存説明"))
 	pmxSaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
-		saveModelAsPmx(logger, translator, cw, lastModelPath, 0, 0)
+		saveModelAsPmx(viewerUsecase, logger, translator, cw, lastModelPath, 0, 0)
 	})
 
 	updatePmxSaveState := func(modelData *model.PmxModel, path string) {
@@ -99,7 +103,7 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		if pmxSaveButton == nil || pmxSaveButton.PushButton == nil {
 			return
 		}
-		pmxSaveButton.SetEnabled(usecase.IsPmxConvertiblePath(lastModelPath))
+		pmxSaveButton.SetEnabled(viewerUsecase.IsPmxConvertiblePath(lastModelPath))
 	}
 
 	pmxLoadPicker := widget.NewPmxPmdXLoadFilePicker(
@@ -108,8 +112,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		config.UserConfigKeyPmxHistory,
 		i18n.TranslateOrMark(translator, "モデルファイル"),
 		i18n.TranslateOrMark(translator, "モデルファイルを選択してください"),
-		func(cw *controller.ControlWindow, rep portio.IFileReader, path string) {
-			modelData := loadModel(logger, translator, cw, rep, path, materialView, 0, 0)
+		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
+			modelData := loadModel(viewerUsecase, logger, translator, cw, rep, path, materialView, 0, 0)
 			updatePmxSaveState(modelData, path)
 		},
 	)
@@ -120,8 +124,8 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 		config.UserConfigKeyVmdHistory,
 		i18n.TranslateOrMark(translator, "モーションファイル"),
 		i18n.TranslateOrMark(translator, "モーションファイルを選択してください"),
-		func(cw *controller.ControlWindow, rep portio.IFileReader, path string) {
-			loadMotion(logger, translator, cw, rep, player, path, 0, 0)
+		func(cw *controller.ControlWindow, rep io_common.IFileReader, path string) {
+			loadMotion(viewerUsecase, logger, translator, cw, rep, player, path, 0, 0)
 		},
 	)
 
@@ -181,12 +185,12 @@ func NewTabPages(mWidgets *controller.MWidgets, baseServices base.IBaseServices,
 }
 
 // NewTabPage は単一タブページを生成する。
-func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer) declarative.TabPage {
-	return NewTabPages(mWidgets, baseServices, initialModelPath, audioPlayer)[0]
+func NewTabPage(mWidgets *controller.MWidgets, baseServices base.IBaseServices, initialModelPath string, audioPlayer audio_api.IAudioPlayer, viewerUsecase *usecase.ModelViewerUsecase) declarative.TabPage {
+	return NewTabPages(mWidgets, baseServices, initialModelPath, audioPlayer, viewerUsecase)[0]
 }
 
 // loadModel はモデル読み込み結果をControlWindowへ反映する。
-func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep portio.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
+func loadModel(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, path string, materialView *widget.MaterialTableView, windowIndex, modelIndex int) *model.PmxModel {
 	if cw == nil {
 		return nil
 	}
@@ -197,11 +201,15 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 		cw.SetModel(windowIndex, modelIndex, nil)
 		return nil
 	}
-	var validator portio.ITextureValidator
-	if materialView != nil {
-		validator = mfile.NewTextureValidator()
+	if viewerUsecase == nil {
+		logLoadFailed(logger, translator, nil)
+		if materialView != nil {
+			materialView.ResetRows(nil)
+		}
+		cw.SetModel(windowIndex, modelIndex, nil)
+		return nil
 	}
-	result, err := usecase.LoadModelWithValidation(rep, path, validator)
+	result, err := viewerUsecase.LoadModel(rep, path)
 	if err != nil {
 		logLoadFailed(logger, translator, err)
 		if materialView != nil {
@@ -232,7 +240,7 @@ func loadModel(logger logging.ILogger, translator i18n.II18n, cw *controller.Con
 }
 
 // loadMotion はモーション読み込み結果をControlWindowへ反映する。
-func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep portio.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
+func loadMotion(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, rep io_common.IFileReader, player *widget.MotionPlayer, path string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
@@ -240,7 +248,12 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 		cw.SetMotion(windowIndex, modelIndex, nil)
 		return
 	}
-	motionResult, err := usecase.LoadMotionWithMeta(rep, path)
+	if viewerUsecase == nil {
+		logLoadFailed(logger, translator, nil)
+		cw.SetMotion(windowIndex, modelIndex, nil)
+		return
+	}
+	motionResult, err := viewerUsecase.LoadMotion(rep, path)
 	if err != nil {
 		logLoadFailed(logger, translator, err)
 		cw.SetMotion(windowIndex, modelIndex, nil)
@@ -263,19 +276,21 @@ func loadMotion(logger logging.ILogger, translator i18n.II18n, cw *controller.Co
 }
 
 // saveModelAsPmx はXまたはPMDモデルをPMX形式で保存する。
-func saveModelAsPmx(logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
+func saveModelAsPmx(viewerUsecase *usecase.ModelViewerUsecase, logger logging.ILogger, translator i18n.II18n, cw *controller.ControlWindow, modelPath string, windowIndex, modelIndex int) {
 	if cw == nil {
 		return
 	}
 	modelData := cw.Model(windowIndex, modelIndex)
-	result, err := usecase.SaveModelAsPmx(usecase.PmxSaveRequest{
+	if viewerUsecase == nil {
+		logSaveFailed(logger, translator, nil)
+		return
+	}
+	result, err := viewerUsecase.SaveModelAsPmx(usecase.SaveModelAsPmxRequest{
 		ModelPath:              modelPath,
 		ModelData:              modelData,
-		Writer:                 io_model.NewModelRepository(),
-		PathService:            mfile.NewPathService(),
 		MissingModelMessage:    i18n.TranslateOrMark(translator, "XまたはPMDファイルが読み込まれていません"),
 		InvalidSavePathMessage: i18n.TranslateOrMark(translator, "保存先パスが不正です"),
-		SaveOptions:            portio.SaveOptions{},
+		SaveOptions:            usecase.SaveOptions{},
 	})
 	if err != nil {
 		logSaveFailed(logger, translator, err)
@@ -333,6 +348,10 @@ func logErrorTitle(logger logging.ILogger, title string, err error) {
 		ErrorTitle(title string, err error, msg string, params ...any)
 	}); ok {
 		titled.ErrorTitle(title, err, "")
+		return
+	}
+	if err == nil {
+		logger.Error("%s: %s", title, "")
 		return
 	}
 	logger.Error("%s: %s", title, err.Error())
