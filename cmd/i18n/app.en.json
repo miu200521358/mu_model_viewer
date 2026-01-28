@@ -90,5 +90,13 @@
     {
         "id": "保存先パスが不正です",
         "translation": "The output path is invalid."
+    },
+    {
+        "id": "読み込み失敗",
+        "translation": "Load Failed"
+    },
+    {
+        "id": "保存失敗",
+        "translation": "Save Failed"
     }
 ]
