@@ -5,11 +5,27 @@
     },
     {
         "id": "使い方説明",
-        "translation": "If you associate the tool with the pmx or x file extension, you can launch the viewer by double-clicking the file.\nYou can also apply motions and toggle material display."
+        "translation": "If you associate the tool with PMX/PMD/X extensions, you can launch it by double-clicking the file.\nYou can display models, apply motions, and toggle material visibility."
     },
     {
         "id": "使い方",
         "translation": "Usage"
+    },
+    {
+        "id": "モデル表示",
+        "translation": "Model Display"
+    },
+    {
+        "id": "モデル表示説明",
+        "translation": "You can load and display PMX/PMD/X models."
+    },
+    {
+        "id": "モーション適用",
+        "translation": "Apply Motion"
+    },
+    {
+        "id": "モーション適用説明",
+        "translation": "You can apply VMD/VPD motions and display them."
     },
     {
         "id": "ビューワー",
@@ -37,7 +53,7 @@
     },
     {
         "id": "材質ビュー説明",
-        "translation": "Displays the selected material.\nInitially, all materials are selected and displayed.\nSelecting a material toggles its selection state.\nHolding Shift while selecting toggles the selection state of materials within the range.\nIf a texture cannot be interpreted, the text color will be displayed in red."
+        "translation": "You can view and select materials in the list.\nClick the checkboxes to toggle material visibility.\nMaterials containing uninterpretable textures are shown in red."
     },
     {
         "id": "モデルファイル",
@@ -77,7 +93,7 @@
     },
     {
         "id": "PMX保存説明",
-        "translation": "Save the loaded X or PMD file as PMX."
+        "translation": "You can save a loaded X/PMD file in PMX format."
     },
     {
         "id": "PMX保存完了",

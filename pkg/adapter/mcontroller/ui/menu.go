@@ -17,7 +17,9 @@ import (
 func NewMenuItems(translator i18n.II18n, logger logging.ILogger) []declarative.MenuItem {
 	return controller.BuildMenuItemsWithMessages(translator, logger, []controller.MenuMessageItem{
 		{TitleKey: messages.HelpUsageTitle, MessageKey: messages.HelpUsage},
-		{TitleKey: controller.MenuSeparatorKey},
+		{TitleKey: messages.HelpModelDisplayTitle, MessageKey: messages.HelpModelDisplay},
+		{TitleKey: messages.HelpMotionApplyTitle, MessageKey: messages.HelpMotionApply},
 		{TitleKey: messages.HelpMaterialViewTitle, MessageKey: messages.HelpMaterialView},
+		{TitleKey: messages.HelpPmxSaveTitle, MessageKey: messages.HelpPmxSave},
 	})
 }
