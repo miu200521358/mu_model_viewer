@@ -33,3 +33,4 @@ cmd/user_config.json
 *.log
 
 配布/
+logs/
