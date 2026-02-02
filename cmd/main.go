@@ -12,7 +12,7 @@ import (
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 
-	"github.com/miu200521358/mu_model_viewer/pkg/adapter/mcontroller/ui"
+	"github.com/miu200521358/mu_model_viewer/pkg/infra/controller/ui"
 	"github.com/miu200521358/mu_model_viewer/pkg/usecase/minteractor"
 
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
