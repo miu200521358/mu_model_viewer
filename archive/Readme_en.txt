@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
 ----------------------------------------------------------------
 
-  「PmxTranslator」
+  「MuModelViewer」
 
     ver1.00.00
 
@@ -21,7 +21,7 @@ Please take a moment to review the following before using it.
 ■  Summary
 ----------------------------------------------------------------
 
-This is a model viewer compatible with PMX models and X files.
+This is a model viewer compatible with PMX / PMD / X files.
 It can be associated with file extensions and launched by double-clicking.
 
 
@@ -60,7 +60,7 @@ https://seiga.nicovideo.jp/seiga/im11561838
 ■  System Requirements
 ----------------------------------------------------------------
 
-- Windows10/11 64bit
+- Windows11 64bit
   - This tool is intended for use in environments where MMD (MikuMikuDance) is supported.
 
 - Other runtimes, etc., are not required.
