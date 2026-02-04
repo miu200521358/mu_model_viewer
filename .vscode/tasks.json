@@ -42,11 +42,12 @@
 		{
 			"label": "shell: delete pre debug exe",
 			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"set \"workspaceFolder=${workspaceFolder}\" && ${workspaceFolder}/.vscode/scripts/delete_pre_debug_exe.bat"
-			],
+			"command": "${workspaceFolder}/.vscode/scripts/delete_pre_debug_exe.bat",
+			"options": {
+				"env": {
+					"workspaceFolder": "${workspaceFolder}"
+				}
+			},
 			"group": {
 				"kind": "none",
 				"isDefault": true
