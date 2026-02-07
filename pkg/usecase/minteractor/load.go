@@ -2,7 +2,7 @@
 package minteractor
 
 import (
-	commonusecase "github.com/miu200521358/mlib_go/pkg/usecase"
+	"github.com/miu200521358/mlib_go/pkg/usecase"
 	"github.com/miu200521358/mu_model_viewer/pkg/usecase/port/moutput"
 )
 
@@ -12,13 +12,13 @@ func (uc *ModelViewerUsecase) LoadModel(rep moutput.IFileReader, path string) (*
 	if repo == nil {
 		repo = uc.modelReader
 	}
-	modelData, err := commonusecase.LoadModel(repo, path)
+	modelData, err := usecase.LoadModel(repo, path)
 	if err != nil {
 		return nil, err
 	}
 	result := &ModelLoadResult{Model: modelData}
 	if modelData != nil && uc.textureValidator != nil {
-		result.Validation = commonusecase.ValidateModelTextures(modelData, uc.textureValidator)
+		result.Validation = usecase.ValidateModelTextures(modelData, uc.textureValidator)
 	}
 	return result, nil
 }
@@ -29,7 +29,7 @@ func (uc *ModelViewerUsecase) LoadMotion(rep moutput.IFileReader, path string) (
 	if repo == nil {
 		repo = uc.motionReader
 	}
-	return commonusecase.LoadMotionWithMeta(repo, path)
+	return usecase.LoadMotionWithMeta(repo, path)
 }
 
 // CanLoadPath はリポジトリが指定パスを読み込み可能か判定する。
@@ -38,5 +38,5 @@ func (uc *ModelViewerUsecase) CanLoadPath(rep moutput.IFileReader, path string) 
 	if repo == nil {
 		repo = uc.modelReader
 	}
-	return commonusecase.CanLoadPath(repo, path)
+	return usecase.CanLoadPath(repo, path)
 }

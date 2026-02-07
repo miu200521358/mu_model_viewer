@@ -3,7 +3,7 @@ package minteractor
 
 import (
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
-	commonusecase "github.com/miu200521358/mlib_go/pkg/usecase"
+	"github.com/miu200521358/mlib_go/pkg/usecase"
 )
 
 // SaveModelAsPmxRequest はPMX保存の入力を表す。
@@ -17,7 +17,7 @@ type SaveModelAsPmxRequest struct {
 
 // SaveModelAsPmx はX/PMDモデルをPMX形式で保存する。
 func (uc *ModelViewerUsecase) SaveModelAsPmx(request SaveModelAsPmxRequest) (*PmxSaveResult, error) {
-	return commonusecase.SaveModelAsPmx(commonusecase.PmxSaveRequest{
+	return usecase.SaveModelAsPmx(usecase.PmxSaveRequest{
 		ModelPath:              request.ModelPath,
 		ModelData:              request.ModelData,
 		Writer:                 uc.modelWriter,
@@ -30,5 +30,5 @@ func (uc *ModelViewerUsecase) SaveModelAsPmx(request SaveModelAsPmxRequest) (*Pm
 
 // IsPmxConvertiblePath はPMX保存対象のパスか判定する。
 func (uc *ModelViewerUsecase) IsPmxConvertiblePath(path string) bool {
-	return commonusecase.IsPmxConvertiblePath(path)
+	return usecase.IsPmxConvertiblePath(path)
 }
