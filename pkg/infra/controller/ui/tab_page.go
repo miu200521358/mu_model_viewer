@@ -5,8 +5,6 @@
 package ui
 
 import (
-	"path/filepath"
-
 	"github.com/miu200521358/mlib_go/pkg/adapter/audio_api"
 	"github.com/miu200521358/mlib_go/pkg/adapter/io_common"
 	"github.com/miu200521358/mlib_go/pkg/domain/model"
@@ -305,7 +303,12 @@ func saveModelAsPmx(viewerUsecase *minteractor.ModelViewerUsecase, logger loggin
 		logger = logging.DefaultLogger()
 	}
 	controller.Beep()
-	logger.Info(i18n.TranslateOrMark(translator, messages.LogPmxSaveSuccess), filepath.Base(result.OutputPath))
+	logInfoTitle(
+		logger,
+		i18n.TranslateOrMark(translator, messages.LogPmxSaveSuccess),
+		messages.LogPmxSaveSuccessDetail,
+		result.OutputPath,
+	)
 }
 
 // logLoadFailed は読み込み失敗ログを出力する。
@@ -356,4 +359,18 @@ func logErrorTitle(logger logging.ILogger, title string, err error) {
 		return
 	}
 	logger.Error("%s: %s", title, err.Error())
+}
+
+// logInfoTitle はタイトル付き情報ログを出力する。
+func logInfoTitle(logger logging.ILogger, title, message string, params ...any) {
+	if logger == nil {
+		logger = logging.DefaultLogger()
+	}
+	if titled, ok := logger.(interface {
+		InfoTitle(title, msg string, params ...any)
+	}); ok {
+		titled.InfoTitle(title, message, params...)
+		return
+	}
+	logger.Info(message, params...)
 }

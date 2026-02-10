@@ -97,7 +97,11 @@
     },
     {
         "id": "PMX保存完了",
-        "translation": "PMX保存完了: %s"
+        "translation": "PMX保存完了"
+    },
+    {
+        "id": "PMX保存完了メッセージ",
+        "translation": "PMXの保存に成功しました\n\n保存先: %s"
     },
     {
         "id": "XまたはPMDファイルが読み込まれていません",
